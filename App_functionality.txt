@@ -1,0 +1,46 @@
+PT Manager App
+
+Features for trainer login
+===========================
+
+My Profile - Add picture, description, Qualifications, Specialities	
+
+My Calendar - View calendar showing my events/classes and available/unavailable time slots
+	- Add Availability - Select days of the week and 1 or more timeslots per selected day
+	- Selecting an event timeslot or an unavailable timeslot allows it to be edited/deleted
+	- Selecting a blank timeslot allows a new event/class to be entered
+		- Adding a new event/class - Enter title, description, start date, start & end times.
+			repeat option, event type, client/s, reminder option, notification type
+
+My Workout Plans? eg 12 week male muscle gain, 12 week female male muscle gain, 12 week male fat loss
+My favourite workouts/exercises?
+My favourite nutrition/foods?
+
+My Payments - History of payments, Outstanding payments, Bank/Paypal info?
+
+My Messages - View my messages. Also send single/group messages to clients
+
+Clients - 
+	- Add new client - Firstname, Surname, Display name, Phone no, Email, DOB, Sex, Disabilities/Injuries
+	- Payment information, subscription info
+	- Contract/Registration info
+	- View client calendar
+
+Features for super user/client login
+====================================
+
+My profile
+
+My calendar
+
+My payment 
+
+My messages
+
+Trainer and class search
+Trainers calendar schedule
+Book timeslot request (request confirmation as class could be full)
+
+
+
+			
