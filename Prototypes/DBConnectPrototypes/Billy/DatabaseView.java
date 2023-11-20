@@ -22,6 +22,7 @@ public class DatabaseView extends AppCompatActivity {
         TextView resultTextView = findViewById(R.id.resultTextView);
 
         // Execute the DatabaseConnection to connect to MySQL and display the result
-        new DatabaseConnection(resultTextView).execute();
+        new DatabaseConnection(resultTextView).execute("INSERT INTO message VALUES (2, 2, 2, 'message2')");
+        new DatabaseConnection(resultTextView).execute(" SELECT * FROM message");
     }
 }
