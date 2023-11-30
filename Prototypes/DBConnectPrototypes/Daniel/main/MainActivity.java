@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     FloatingActionButton add_button;
+    CalendarView calendarView;
+    Calendar calendar;
 
     DatabaseExampleHelp myDB;
     ArrayList<String> _id, event_name, event_trainer, event_time;
@@ -26,6 +28,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        calendarView = findViewById(R.id.calendarView);
+        calendar = Calendar.getInstance();
+
+        setDate(30,11,2023);
+
+        getDate();
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {
+                Toast.makeText(MainActivity.this,day + "/" + month + "/" + year, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         recyclerView = findViewById(R.id.recyclerView);
         add_button = findViewById(R.id.add_button);
@@ -49,6 +64,24 @@ public class MainActivity extends AppCompatActivity {
                 event_time);
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+    }
+
+    public void getDate()
+    {
+        long date = calendarView.getDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
+        calendar.setTimeInMillis(date);
+        String selected_date = simpleDateFormat.format(calendar.getTime());
+        Toast.makeText(this, selected_date, Toast.LENGTH_SHORT).show();
+    }
+
+    public void setDate(int day, int month, int year)
+    {
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month - 1);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        long millis = calendar.getTimeInMillis();
+        calendarView.setDate(millis);
     }
 
     void storeDataInArrays() {
