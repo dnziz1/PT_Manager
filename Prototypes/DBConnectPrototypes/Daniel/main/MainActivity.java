@@ -18,8 +18,12 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     FloatingActionButton add_button;
+
     CalendarView calendarView;
     Calendar calendar;
+
+    // private DatePickerDialog datePickerDialog;
+    // private Button dateButton;
 
     DatabaseExampleHelp myDB;
     ArrayList<String> _id, event_name, event_trainer, event_time;
@@ -28,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // initDatePicker();
+        // dateButton = findViewById(R.id.datePickerButton);
+        // dateButton.setText(getTodaysDate());
 
         calendarView = findViewById(R.id.calendarView);
         calendar = Calendar.getInstance();
