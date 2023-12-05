@@ -19,12 +19,12 @@ if ($conn->connect_error) {
 echo "Connected successfully\r\n\n";
 
 
-//Check if the 'query' parameter is set in the GET request
+//Check if the 'action' parameter is set in the GET request
 
-if (isset($_GET['query'])) {
-    $query = $_GET['query'];
-    //If query is trainer login
-    if ($query === "trainerlogin") {
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
+    //If action is trainer login
+    if ($action === "trainerlogin") {
         //Get username and password from app
         $user = $_GET['user'];
         $pass = $_GET['pass'];
@@ -40,7 +40,7 @@ if (isset($_GET['query'])) {
         } else {
             echo "Login failed";
         }
-    } elseif ($query === "clientlogin") {
+    } elseif ($action === "clientlogin") {
         //Get username and password from app
         $user = $_GET['user'];
         $pass = $_GET['pass'];
@@ -58,6 +58,6 @@ if (isset($_GET['query'])) {
         }
     }
 } else {
-    echo "No query provided";
+    echo "No action provided";
 }
 ?>
