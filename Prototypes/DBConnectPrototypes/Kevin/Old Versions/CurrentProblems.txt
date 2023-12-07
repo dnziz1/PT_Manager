@@ -1,9 +1,0 @@
-Searched for lots of example code using Retrofit and Volley api's (Rest)
-
-Many examples on the internet are out of date with deprecated functions/code.
-Or they don't explain all steps, or the code simply doesn't work/has something missing.
-
-DBPrototypeLogin uses the Volley api. Managed to get code running but the onResponse code in LoginActivity.java 
-never runs after sending a Post request to my local server PHP
-
-Similar thing happens with DBPrototype which uses the Retrofit api.
