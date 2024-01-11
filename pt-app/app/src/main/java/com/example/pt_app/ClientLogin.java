@@ -36,39 +36,46 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         String username = usernameInput.getText().toString();
         String password = passwordInput.getText().toString();
 
-        try {
-            //Hash password using MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(password.getBytes());
-            byte[] bytes = md.digest();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++) {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        // KEV TEST
+        if (username.equals("admin") && password.equals("12345")) {
+            Intent intent = new Intent (this, ProgramList.class);
+            startActivity(intent);
+        } else {
+            try {
+                //Hash password using MD5
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                md.update(password.getBytes());
+                byte[] bytes = md.digest();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < bytes.length; i++) {
+                    sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                }
+                String generatedPassword = sb.toString();
+
+                //HTML encode username and password to handle special characters
+                username = URLEncoder.encode(username, "UTF-8");
+                password = URLEncoder.encode(generatedPassword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
             }
-            String generatedPassword = sb.toString();
 
-            //HTML encode username and password to handle special characters
-            username = URLEncoder.encode(username, "UTF-8");
-            password = URLEncoder.encode(generatedPassword, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            //Form parameters into a string
+            String data = "clientlogin&user=" + username + "&pass=" + password;
+            // new way? : String data = "login.php?arg1=clientlogin&user=" + username + "&pass=" + password;
+
+            //Create new database connection
+            ServerConnection serverConnection = new ServerConnection();
+            //Setup response value
+            serverConnection.delegate = this;
+            //Send data to server
+            serverConnection.execute(data);
         }
-
-        //Form parameters into a string
-        String data = "clientlogin&user=" + username + "&pass=" + password;
-
-        //Create new database connection
-        ServerConnection serverConnection = new ServerConnection();
-        //Setup response value
-        serverConnection.delegate = this;
-        //Send data to server
-        serverConnection.execute(data);
     }
 
     //Get the result of async process
-    public void processFinish(String result){
+    public void processFinish(String result, String destination){
         //Check if login is successful
         if (result.contains("Login successful")){
             //Change activity

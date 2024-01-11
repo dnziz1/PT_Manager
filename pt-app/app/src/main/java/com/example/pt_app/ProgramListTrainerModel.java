@@ -1,12 +1,13 @@
 package com.example.pt_app;
 
-public class ProgramListTrainer {
+public class ProgramListTrainerModel {
 
     int trainerID;
     String name;
 
-    public ProgramListTrainer() {
-
+    public ProgramListTrainerModel(int trainerID, String name) {
+        this.trainerID = trainerID;
+        this.name = name;
     }
     public int getTrainerID() {
         return trainerID;

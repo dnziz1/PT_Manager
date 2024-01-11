@@ -1,11 +1,11 @@
 package com.example.pt_app;
 
-public class ProgramListModel {
+public class ProgramListLVModel {
     private int progID;
     private String name;
     private int duration;
 
-    public ProgramListModel(int progID, String name, int duration) {
+    public ProgramListLVModel(int progID, String name, int duration) {
         this.progID = progID;
         this.name = name;
         this.duration = duration;

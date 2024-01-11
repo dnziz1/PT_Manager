@@ -71,7 +71,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     }
 
     //Get the result of async process
-    public void processFinish(String result){
+    public void processFinish(String result, String destination){
         //Check if login is successful
         if (result.contains("Login successful")){
             //Change activity

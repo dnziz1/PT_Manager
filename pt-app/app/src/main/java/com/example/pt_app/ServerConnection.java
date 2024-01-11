@@ -10,6 +10,7 @@ import java.net.URLEncoder;
 
 public class ServerConnection extends AsyncTask<String, Void, String> {
     String result;
+    String destination;
     public AsyncResponse delegate = null;
 
     @Override
@@ -17,13 +18,16 @@ public class ServerConnection extends AsyncTask<String, Void, String> {
         String data = params[0];
         result = "";
         this.delegate = delegate;
+        this.destination = params[1];
 
         try {
             //Update the URL to include the parameters
-            URL url = new URL("http://10.0.2.2:8000/server.php?action=" + data);
+            URL url = new URL("http://192.168.1.222:8000/" + data);
+            //URL url = new URL("http://10.0.2.2:8000/server.php?action=" + data);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
+
             while ((line = reader.readLine()) != null) {
                 result += line + "\n";
             }
@@ -37,6 +41,8 @@ public class ServerConnection extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        delegate.processFinish(result);
+
+        //delegate.processFinish(result);
+        delegate.processFinish(result,destination);
     }
 }
