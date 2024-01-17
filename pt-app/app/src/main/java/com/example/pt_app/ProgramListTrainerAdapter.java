@@ -46,7 +46,7 @@ public class ProgramListTrainerAdapter extends BaseAdapter {
         LayoutInflater inflater = activity.getLayoutInflater();
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.proglist_listview_row, null);
+            convertView = inflater.inflate(R.layout.proglist_trainer_spinner_row, null);
             holder = new ViewHolder();
             holder.mTrainerID = (TextView) convertView.findViewById(R.id.rProgListTrainerID);
             holder.mName = (TextView) convertView.findViewById(R.id.rProgListTrainerName);
