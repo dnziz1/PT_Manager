@@ -6,7 +6,7 @@
 	include "db.php";
 
 	// initialise argument fields
-	$arg1 = $arg2 = $arg3 = $arg4 = $arg5 = $arg6 = $arg7 = $arg8 = $arg9 = $arg10 = Null;
+	$arg1 = $arg2 = $arg3 = $arg4 = $arg5 = $arg6 = $arg7 = $arg8 = $arg9 = $arg10 = NULL;
 	
 	//Check for passed in arguments and store if so
 	if (isset($_GET['arg1'])) $arg1 = strval($_GET['arg1']);
@@ -44,6 +44,9 @@
 			deleteProgram ($conn,$arg2); 
 			// arg2 = programID
 			break;
+		case "gat":
+			getAllTrainers ($conn); 
+			break;
 		default:
 			$arr = ["status" => "Error","msg" => "Invalid SQL Identifier: " . $arg1];
 			die(json_encode($arr));
@@ -56,10 +59,10 @@
 		// GET PROGRAMS FROM THE PROGRAMS TABLE BASED ON FILTER CRITERIA
 		
 		// check which selection criteria has been passed in if any
-		$progNameSearch = empty($progNameCriteria) ? false : true;
-		$minDaysSearch = empty($minDays) ? false : true;
-		$maxDaysSearch = empty($maxDays) ? false : true;
-		$trainerSearch = empty($trainerID) ? false : true;
+		$progNameSearch = ($progNameCriteria == Null) ? 0 : 1;
+		$minDaysSearch = ($minDays == Null) ? 0 : 1;
+		$maxDaysSearch = ($maxDays == Null) ? 0 : 1;
+		$trainerSearch = ($trainerID == Null) ? 0 : 1;
 		
 		// build sql based on search criteria
 		$sql = "SELECT * FROM programs ";
@@ -95,6 +98,7 @@
 		try {
 			// prepare sql and bind parameters
 			$stmt = $conn->prepare($sql);
+			//echo $sql;
 
 			if ($progNameSearch) $stmt->bindParam(':progNameCriteria', $progNameLike, PDO::PARAM_STR);
 			if ($minDaysSearch) $stmt->bindParam(':minDays', $minDays, PDO::PARAM_INT);
@@ -158,7 +162,8 @@
 	function getProgramByID($conn,$progID) {
 		// GET A SPECIFIC PROGRAM FROM THE PROGRAMS TABLE
 
-		if(empty($progID)) {
+		//if(empty($progID)) {
+		if($progID == Null) {
 			$arr = ["status" => "Error","msg" => "Invalid ProgramID: " . $progID];
 			die(json_encode($arr));
 		}
@@ -225,7 +230,8 @@
 	function updateProgram($conn,$progID,$progName,$duration,$notes) {
 		// CODE FOR UPDATING ROWS IN THE PROGRAMS TABLE
 
-		if(empty($progID)) {
+		//if(empty($progID)) {
+		if($progID == Null) {
 			$arr = ["status" => "Error","msg" => "Invalid programID: " . $progID];
 			die(json_encode($arr));
 		}
@@ -257,7 +263,8 @@
 	function deleteProgram($conn,$progID) {
 		// DELETE A SPECIFIC PROGRAM FROM THE PROGRAMS TABLE
 
-		if(empty($progID)) {
+		//if(empty($progID)) {
+		if($progID == Null) {
 			$arr = ["status" => "Error","msg" => "Invalid programID:" . $progID];
 			die(json_encode($arr));
 		}
@@ -282,5 +289,36 @@
 			die(json_encode($arr));
 		}
 	}
+	
+		function getAllTrainers($conn) {
+		// GET ALL Trainers FROM THE Trainers TABLE
+
+		try {
+			// prepare sql and bind parameters
+			$stmt = $conn->prepare("SELECT * FROM trainers");
+			$stmt->execute();
+		} catch(PDOException $e) {
+			$arr = ["status" => "Error","msg" => "PDO exception: " . $e->getMessage()];
+			die(json_encode($arr));
+		}
+	
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ($result) {
+			$data = array();
+
+			foreach ($result as $row) {
+				$data[] = $row;
+			}
+			
+			// Output the results as json data
+			$arr = ["status" => "OK","msg" => "Data retrieved successfully","data" => $data];
+			echo json_encode($arr);
+		} else {
+			// Return code is OKND (Query ran ok but no data to return which is not necessarily an error)
+			$arr = ["status" => "OKND","msg" => "No rows found","data" => Null];
+			echo json_encode($arr);
+		}
+	}
+
 
 ?>
