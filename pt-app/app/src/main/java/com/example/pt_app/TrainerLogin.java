@@ -3,7 +3,6 @@ package com.example.pt_app;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import java.security.NoSuchAlgorithmException;
@@ -11,13 +10,16 @@ import java.security.NoSuchAlgorithmException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 
 public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     //Initialise EditText variables
     EditText usernameInput;
     EditText passwordInput;
+
+    //Initialise username and password strings
+    String username = usernameInput.getText().toString();
+    String password = passwordInput.getText().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +31,31 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         passwordInput = findViewById(R.id.trainerPasswordInput);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        SessionManager sessionManager = new SessionManager(TrainerLogin.this);
+        int userID = sessionManager.getSession();
+
+        //if user is logged in
+        if (userID != -1){
+            //Change activity
+            Intent intent = new Intent (this, Calendar.class);
+            startActivity(intent);
+        }
+    }
+
     public void openClientLogin (View view){
         Intent intent = new Intent (this, ClientLogin.class);
         startActivity(intent);
     }
 
     public void logIn (View view){
-        //Get input values for username and password
-        String username = usernameInput.getText().toString();
-        String password = passwordInput.getText().toString();
+        username = usernameInput.getText().toString();
+        password = passwordInput.getText().toString();
 
+        //Get input values for username and password
         try {
             //Hash password using MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -74,6 +91,10 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     public void processFinish(String result, String destination){
         //Check if login is successful
         if (result.contains("Login successful")){
+            //Set session
+            StoredUser storedUser = new StoredUser(1,username);
+            SessionManager sessionManager = new SessionManager(TrainerLogin.this);
+            sessionManager.saveSession(storedUser);
             //Change activity
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
