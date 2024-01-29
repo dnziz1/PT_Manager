@@ -18,8 +18,8 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     EditText passwordInput;
 
     //Initialise username and password strings
-    String username = usernameInput.getText().toString();
-    String password = passwordInput.getText().toString();
+    String username;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
