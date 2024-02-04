@@ -86,7 +86,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
             //Reset the password input if incorrect
-        } else {;
+        } else {
             EditText passwordInput = findViewById(R.id.trainerPasswordInput);
             passwordInput.setText("");
         }
