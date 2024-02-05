@@ -16,6 +16,10 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
     EditText usernameInput;
     EditText passwordInput;
 
+    //Initialise username and password strings
+    String username;
+    String password;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +37,8 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
     public void logIn (View view){
         //Get input values for username and password
-        String username = usernameInput.getText().toString();
-        String password = passwordInput.getText().toString();
+        username = usernameInput.getText().toString();
+        password = passwordInput.getText().toString();
 
         // KEV TEST
         if (username.equals("admin") && password.equals("12345")) {
@@ -62,10 +66,10 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             }
 
             //Form parameters into a string
-            String data = "clientlogin&user=" + username + "&pass=" + password;
+            String data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
             // new way? : String data = "login.php?arg1=clientlogin&user=" + username + "&pass=" + password;
 
-            //Create new database connection
+            //Create new backend connection
             ServerConnection serverConnection = new ServerConnection();
             //Setup response value
             serverConnection.delegate = this;
@@ -82,7 +86,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
             //Reset the password input if incorrect
-        } else {;
+        } else {
             EditText passwordInput = findViewById(R.id.trainerPasswordInput);
             passwordInput.setText("");
         }
