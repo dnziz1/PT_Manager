@@ -1,51 +1,65 @@
+package com.example.pt_app;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
+import android.media.metrics.Event;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 public class NotificationEventAdapter extends RecyclerView.Adapter<NotificationEventAdapter.EventViewHolder> {
-    private Context context;
-    private List<Activity> activityList;
+    Context context;
+    List<com.example.pt_app.Notification> activityList;
 
-    public EventAdapter(Context context, List<Activity> activityList) {
+    public NotificationEventAdapter(Context context, List<com.example.pt_app.Notification> activityList) {
         this.context = context;
         this.activityList = activityList;
     }
 
+    public NotificationEventAdapter(NotificationActivity notificationActivity, List<Notification> notificationList) {
+    }
+
+    @NonNull
     @Override
-    public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_event, parent, false);
-        return new EventViewHolder(view);
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View notificationLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_notification,parent,false);
+        return new EventViewHolder(notificationLayout);
     }
 
     @Override
-    public void onBindViewHolder(EventViewHolder holder, int position) {
-        Event event = activityList.get(position);
+    public void onBindViewHolder(@NonNull NotificationEventAdapter.EventViewHolder holder, int position) {
+        com.example.pt_app.Notification notification = activityList.get(position);
+        holder.Title.setText(notification.getTitle());
+        holder.Description.setText(notification.getDescription());
+    }
 
-        holder.activityTitle.setText(event.getTitle());
-        holder.activityDetail.setText(event.getDescription());
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
     public int getItemCount() {
-        return activityList.size();
+        return 0;
     }
 
     public class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView activityTitle;
-        TextView activityDetail;
-
-        public EventViewHolder(View itemView) {
+        TextView Title;
+        TextView Description;
+        public EventViewHolder(@NonNull View itemView) {
             super(itemView);
-            activityTitle = itemView.findViewById(R.id.activityTitle);
-            activityDetail = itemView.findViewById(R.id.activityDetail);
+            Title=itemView.findViewById(R.id.titleTextView);
+            Description=itemView.findViewById(R.id.descriptionTextView);
         }
     }
 }
-
 
