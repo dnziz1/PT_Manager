@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ProgramCreateEdit"
+            android:exported="false" />
+        <activity
             android:name=".ProgramList"
             android:exported="false" />
         <activity

@@ -1,9 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+
+ </androidx.constraintlayout.widget.ConstraintLayout> -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ProgramCreateEdit">
+    android:layout_height="wrap_content"
+    tools:context=".ProgramCreate"
+    android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="30dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/progCreateEditTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Program Create/Edit"
+                android:textAlignment="center"
+                android:textSize="20dp"
+                android:textStyle="bold"></TextView>
+            <TextView
+                android:id="@+id/progCreateEditInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="Programs allow you to create a plan with many workouts, nutrition plans and tasks for your clients"
+                android:textSize="20dp">
+            </TextView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Program Name"
+                android:textSize="20dp">
+            </TextView>
+            <EditText
+                android:id="@+id/progCreateName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:hint="Name of the workout program"
+                android:inputType="textAutoComplete"
+                android:singleLine="true"
+                android:textSize="20dp">
+            </EditText>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Program Duration (days)"
+                android:textSize="20dp">
+            </TextView>
+            <EditText
+                android:id="@+id/progCreateDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:hint="No. of days that the program lasts"
+                android:inputType="textAutoComplete"
+                android:digits="0123456789"
+                android:singleLine="true"
+                android:textSize="20dp">
+            </EditText>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notes"
+                android:textSize="20dp">
+            </TextView>
+            <EditText
+                android:id="@+id/progCreateNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:hint="What is the program about?"
+                android:inputType="textAutoComplete"
+                android:singleLine="false"
+                android:textSize="20dp">
+            </EditText>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/progCreateDayPlanBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="?attr/colorPrimary"
+                    android:text="PLAN"
+                    android:textColor="#FFF"
+                    android:textSize="20dp" />
+
+                <Button
+                    android:id="@+id/progCreateSaveBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="?attr/colorPrimary"
+                    android:text="SAVE"
+                    android:textColor="#FFF"
+                    android:textSize="20dp" />
+
+                <Button
+                    android:id="@+id/progCreateCancelBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
+                    android:background="?attr/colorPrimary"
+                    android:text="Cancel"
+                    android:textColor="#FFF"
+                    android:textSize="20dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

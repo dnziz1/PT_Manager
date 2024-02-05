@@ -39,6 +39,7 @@ public class ProgramListLVAdapter extends BaseAdapter {
         TextView mProgramID;
         TextView mName;
         TextView mDuration;
+        TextView mNotes;
     }
 
     @Override
@@ -53,6 +54,7 @@ public class ProgramListLVAdapter extends BaseAdapter {
             holder.mProgramID = (TextView) convertView.findViewById(R.id.rProgListProgID);
             holder.mName = (TextView) convertView.findViewById(R.id.rProgListName);
             holder.mDuration = (TextView) convertView.findViewById(R.id.rProgListDuration);
+            holder.mNotes = (TextView) convertView.findViewById(R.id.rProgListNotes);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -62,6 +64,7 @@ public class ProgramListLVAdapter extends BaseAdapter {
         holder.mProgramID.setText(String.valueOf(item.getProgID()));
         holder.mName.setText(item.getName().toString());
         holder.mDuration.setText(String.valueOf(item.getDuration()));
+        holder.mNotes.setText(String.valueOf(item.getNotes()));
 
         return convertView;
     }

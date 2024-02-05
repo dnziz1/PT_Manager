@@ -1,5 +1,6 @@
 package com.example.pt_app;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -17,6 +18,8 @@ import org.json.JSONObject;
 
 public class ProgramDayPlanner extends AppCompatActivity implements AsyncResponse {
 
+    int passedProgID, passedProgDuration;
+    String passedProgName;
     AsyncResponse asyncResponse;
     //Context context;
     @Override
@@ -30,17 +33,27 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
         final LinearLayout[] myDayHeaders = new LinearLayout[N]; // create an empty array;
         final TextView[] myTextViews = new TextView[N]; // create an empty array;
 
-        //TextView tvProgName = (TextView) findViewById(R.id.progCreateName);
+        // Store passed in variables
+        Intent intent = getIntent();
+        //passedMode = intent.getStringExtra("MODE");
+        passedProgID = intent.getIntExtra("PROGID",0);
+        passedProgName = intent.getStringExtra("PROGNAME");
+        passedProgDuration = intent.getIntExtra("DURATION",0);
+        //passedProgNotes = intent.getStringExtra("NOTES");
+        //bolCreateMode = true; // set default mode as creating a new program
+
+            //TextView tvProgName = (TextView) findViewById(R.id.progCreateName);
         //
-        // CREATE Program
-        //String data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes + "&arg5=" + trainerID;
+        // SHOW all Program Days and any events
+
+        String data = "programs.php?arg1=gpe&arg2=" + passedProgID;
 
         //Create new database connection
-        //ServerConnection serverConnection = new ServerConnection();
+        ServerConnection serverConnection = new ServerConnection();
         //Setup response value
-        //serverConnection.delegate = asyncResponse;
+        serverConnection.delegate = asyncResponse;
         //Send data to server
-        //serverConnection.execute(data);
+        serverConnection.execute(data);
 
     }
 
@@ -59,139 +72,153 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
 
         // CONVERT RESULT STRING TO JSON ARRAY
         JSONArray ja = null;
+        JSONObject jo = null;
         try {
-            ja = new JSONArray(result);
+            //ja = new JSONArray(result);
+            jo = new JSONObject(result);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
 
-        // *********TO DO Code to read no of days from programs table
-        // Program ID can be passed from Program Select or from Program Create activities
-        // Use no of days  instead of N
+        if (jo.length() > 0) {
+            try {
+                if (jo.getString("status").equals("Error")) {
+                    Log.d("Error", jo.getString("msg"));
 
-        // READ JSON row
-        // Get eventday from row
-        // If eventday = day loop i then place on screen otherwise continue i loop
-        int dataLength = ja.length();
-        JSONObject jo = null;
-        long programID = 0;
-        String email = "";
-        String password = "";
-        String createTime = "";
+                    new AlertDialog.Builder(this)
+                            .setTitle("Error Retrieving Program Events")
+                            .setMessage(jo.getString("msg"))
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton("OK", null)
+                            .show();
+                } else {
+                    JSONArray jaData = null;
 
-        for (int day = 1; day <= 10; day++) {
+                    if (jo.getString("status").equals("OK")) {
+                        jaData = jo.getJSONArray("data");
+                    }
 
-            LinearLayout LLH = new LinearLayout(this);
-            LLH.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(10, 10, 10, 10);
-            LLH.setLayoutParams(params);
+//                    if (destination.equals("events")) {
+//                        PopulateTrainerSpinner(jaData);
+//                    } else if (destination.equals("listPrograms")) {
+//                        PopulateProgramListView(jaData);
+//                    }
 
+                    //String createTime = "";
 
-            // create a new textview
-            final TextView rowTextView = new TextView(this);
-            rowTextView.setLayoutParams(params);
+                    for (int day = 1; day <= passedProgDuration; day++) {
 
-            // ******* PLACE Day and Add event on same line
-            // clicking Add event opens pop up window to choose a workout, task or custom text
+                        LinearLayout LLH = new LinearLayout(this);
+                        LLH.setOrientation(LinearLayout.HORIZONTAL);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(10, 10, 10, 10);
+                        LLH.setLayoutParams(params);
 
-            //Linear layout horizontal
+                        // create a new textview
+                        final TextView rowTextView = new TextView(this);
+                        rowTextView.setLayoutParams(params);
 
-            // set some properties of rowTextView or something
-            rowTextView.setText("Day " + day);
+                        // ******* PLACE Day and Add event on same line
+                        // clicking Add event opens pop up window to choose a workout, task or custom text
 
-            Button btnAddEvent = new Button(this);
-            btnAddEvent.setText("Add Event");
+                        // set some properties of rowTextView
+                        rowTextView.setText("Day " + day);
 
-            // add day and Add event button on the same row
-            LLH.addView(rowTextView);
-            LLH.addView(btnAddEvent);
-            // add the textview to the linearlayout
-            LinearLayout layout = (LinearLayout) findViewById(R.id.programDayPlanLayout);
-            layout.addView(LLH);
+                        Button btnAddEvent = new Button(this);
+                        btnAddEvent.setText("Add Event");
 
-            btnAddEvent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(getApplicationContext(), ProgramEventCreate.class));
-                    //finish();
-                }
-            });
+                        // add day and Add event button on the same row
+                        LLH.addView(rowTextView);
+                        LLH.addView(btnAddEvent);
+                        // add the textview to the linearlayout
+                        LinearLayout layout = (LinearLayout) findViewById(R.id.programDayPlanLayout);
+                        layout.addView(LLH);
 
-            // save a reference to the textview for later
-            //myTextViews[i] = rowTextView;
+                        btnAddEvent.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                startActivity(new Intent(getApplicationContext(), ProgramEventCreate.class));
+                                //finish();
+                            }
+                        });
 
-            // ******** TODO Code a loop to read events from the events table
+                        // ITERATE THROUGH JSONArray AND UPDATE ACTIVITY FIELDS
+                        int dayID, eventID;
+                        String eventNotes;
 
+                        //for (int i = 0; i < n; i++) {
+                        // GET INDIVIDUAL JSON OBJECT FROM JSON ARRAY
+                        //if ( dataLength > 0) {
+                        for (int j = 0; j < jaData.length(); j++) {
+                            //try {
+                            jo = ja.getJSONObject(j);
+                            // RETRIEVE EACH JSON OBJECT'S FIELDS
 
-            // ITERATE THROUGH JSONArray AND UPDATE ACTIVITY FIELDS
+                            dayID = jo.getInt("dayID");
 
-            //for (int i = 0; i < n; i++) {
-            // GET INDIVIDUAL JSON OBJECT FROM JSON ARRAY
-            if ( dataLength > 0) {
-                for (int j = 0; j < dataLength; j++) {
-                    try {
-                        jo = ja.getJSONObject(j);
-                        // RETRIEVE EACH JSON OBJECT'S FIELDS
+                            if (dayID == day) {
+                                eventID = jo.getInt("eventID");
+                                eventNotes = jo.getString("notes");
+                                //createTime = jo.getString("create_time");
 
-                        programID = jo.getLong("programID");
+                                // CREATE DYNAMIC EVENT ROWS WITH EDIT BUTTON
+                                // build rowTextView from event and notes
 
-                        if (programID == day) {
-                            email = jo.getString("email");
-                            password = jo.getString("password");
-                            createTime = jo.getString("create_time");
+                                LinearLayout LLE = new LinearLayout(this);
+                                LLE.setOrientation(LinearLayout.HORIZONTAL);
+                                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                paramsE.setMargins(10, 10, 10, 10);
+                                LLE.setLayoutParams(paramsE);
 
-                            // CREATE DYNAMIC EVENT ROWS WITH EDIT BUTTON
-                            // build rowTextView from event and notes
+                                // create a new textview
+                                final TextView rowTextViewE = new TextView(this);
+                                rowTextViewE.setLayoutParams(paramsE);
 
-                            LinearLayout LLE = new LinearLayout(this);
-                            LLE.setOrientation(LinearLayout.HORIZONTAL);
-                            LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            paramsE.setMargins(10, 10, 10, 10);
-                            LLE.setLayoutParams(paramsE);
+                                // ******* PLACE event and EDIT button on same line
+                                // clicking Edit event opens pop up window to amend workout, task or custom text
 
-                            // create a new textview
-                            final TextView rowTextViewE = new TextView(this);
-                            rowTextViewE.setLayoutParams(paramsE);
+                                //Linear layout horizontal
 
-                            // ******* PLACE event and EDIT button on same line
-                            // clicking Edit event opens pop up window to amend workout, task or custom text
+                                // set some properties of rowTextView
+                                rowTextViewE.setText(eventID + " : " + eventNotes);
 
-                            //Linear layout horizontal
+                                Button btnEditEvent = new Button(this);
+                                btnEditEvent.setText("Edit");
 
-                            // set some properties of rowTextView or something
-                            rowTextViewE.setText(programID + " : " + email);
+                                // add day and Add event button on the same row
+                                LLE.addView(rowTextViewE);
+                                LLE.addView(btnEditEvent);
+                                // add the textview to the linearlayout
+                                LinearLayout layoutE = (LinearLayout) findViewById(R.id.programDayPlanLayout);
+                                layoutE.addView(LLE);
 
-                            Button btnEditEvent = new Button(this);
-                            btnEditEvent.setText("Edit");
+                                btnEditEvent.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        //Context mContext = MyApp.getAppContext();
+                                        //Intent iEditEvent = new Intent(getApplicationContext(), ProgramEventCreate.class);
+                                        //Intent iEditEvent = new Intent(mContext, ProgramEventCreate.class);
+                                        //startActivity(iEditEvent);
+                                        startActivity(new Intent(getApplicationContext(), ProgramEventCreate.class));
 
-                            // add day and Add event button on the same row
-                            LLE.addView(rowTextViewE);
-                            LLE.addView(btnEditEvent);
-                            // add the textview to the linearlayout
-                            LinearLayout layoutE = (LinearLayout) findViewById(R.id.programDayPlanLayout);
-                            layoutE.addView(LLE);
-
-                            btnEditEvent.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    //Context mContext = MyApp.getAppContext();
-                                    //Intent iEditEvent = new Intent(getApplicationContext(), ProgramEventCreate.class);
-                                    //Intent iEditEvent = new Intent(mContext, ProgramEventCreate.class);
-                                    //startActivity(iEditEvent);
-                                    startActivity(new Intent(getApplicationContext(), ProgramEventCreate.class));
-
-                                    //mContext.startActivity(iEditEvent);
-                                    //finish();
-                                }
-                            });
+                                        //mContext.startActivity(iEditEvent);
+                                        //finish();
+                                    }
+                                });
+                            }
+                            //} catch(JSONException e){
+                            //    throw new RuntimeException(e);
+                            //}
                         }
-                    } catch(JSONException e){
-                        throw new RuntimeException(e);
                     }
                 }
+
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
         }
+
     }
+
 
 }

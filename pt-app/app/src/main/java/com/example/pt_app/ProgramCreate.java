@@ -35,11 +35,29 @@ public class ProgramCreate extends AppCompatActivity implements AsyncResponse {
         setContentView(R.layout.activity_program_create);
         asyncResponse = this;
         //context = this;
+
         programName = findViewById(R.id.progCreateName);
         programDuration = findViewById(R.id.progCreateDuration);
         programNotes = findViewById(R.id.progCreateNotes);
         trainerID = "999";
         // TO FIX *********** trainerID = findViewById(R.id.trainerUsernameInput);
+
+        // Find out if creating or editing a program and set the screen accordingly
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("MODE");
+        String progIDToEdit = intent.getStringExtra("PROGID");
+        String progNameToEdit = intent.getStringExtra("PROGNAME");
+        String progDurationToEdit = intent.getStringExtra("DURATION");
+        String progNotesToEdit = intent.getStringExtra("NOTES");
+
+        if (mode.equals("EDIT")) {
+            // COPY DATA FROM LIST SCREEN AND POPULATE ACTIVITY VIEWS
+            //programID.setText(progIDToEdit);
+            programName.setText(progNameToEdit);
+            programDuration.setText(progDurationToEdit);
+            programNotes.setText(progNotesToEdit);
+        }
+
 
         btnDayPlanner = findViewById(R.id.progCreateDayPlanBtn);
         btnDayPlanner.setOnClickListener(new View.OnClickListener() {
@@ -81,8 +99,14 @@ public class ProgramCreate extends AppCompatActivity implements AsyncResponse {
                     throw new RuntimeException(e);
                 }
 
-                // CREATE Program
-                String data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes + "&arg5=" + trainerID;
+                String data = "";
+                if (mode.equals("EDIT")) {
+                    // UPDATE EXISTING PROGRAM
+                    data = "programs.php?arg1=up&arg2=" + progIDToEdit + "&arg3=" + progName + "&arg4=" + progDuration + "&arg5=" + progNotes;
+                } else {
+                    // CREATE Program
+                    data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes + "&arg5=" + trainerID;
+                }
 
                 //Create new database connection
                 ServerConnection serverConnection = new ServerConnection();

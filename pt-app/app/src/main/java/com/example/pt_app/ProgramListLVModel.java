@@ -4,6 +4,7 @@ public class ProgramListLVModel {
     private int progID;
     private String name;
     private int duration;
+    private String notes;
 
     public ProgramListLVModel(int progID, String name, int duration) {
         this.progID = progID;
@@ -21,6 +22,9 @@ public class ProgramListLVModel {
 
     public int getDuration() {
         return duration;
+    }
+    public String getNotes() {
+        return notes;
     }
 
 }

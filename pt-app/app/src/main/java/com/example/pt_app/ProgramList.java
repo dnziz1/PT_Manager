@@ -2,6 +2,7 @@ package com.example.pt_app;
 
 import static android.widget.AdapterView.*;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 
 public class ProgramList extends AppCompatActivity implements AsyncResponse {
     AsyncResponse asyncResponse;
-    //Context context;
+    Context context;
     Button btnUpdateSearch;
     ListView lvPrograms;
     ArrayList<ProgramListLVModel> arrPrograms;
@@ -36,9 +37,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
     Spinner spTrainers;
     ArrayList<ProgramListTrainerModel> arrTrainers;
     ProgramListTrainerAdapter spTrainersAdapter ;
-    TextView tvNameSearch;
-    TextView tvMinDays;
-    TextView tvMaxDays;
+    TextView tvNameSearch, tvMinDays, tvMaxDays;
 
 
     @Override
@@ -46,6 +45,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_program_list);
         asyncResponse = this;
+        context = this;
         //context = this;
         tvNameSearch = findViewById(R.id.progListNameSearch);
         tvMinDays = findViewById(R.id.progListMinDays);
@@ -111,9 +111,10 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                String programID = ((TextView)view.findViewById(R.id.rProgListProgID)).getText().toString();
+                int programID = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListProgID)).getText().toString());
                 String name = ((TextView)view.findViewById(R.id.rProgListName)).getText().toString();
-                String duration = ((TextView)view.findViewById(R.id.rProgListDuration)).getText().toString();
+               int duration = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListDuration)).getText().toString());
+               String notes = ((TextView)view.findViewById(R.id.rProgListNotes)).getText().toString();
 
                 Toast.makeText(getApplicationContext(),
                         "ProgramID : " + programID +"\n"
@@ -121,6 +122,13 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
                                 +"Duration : " + duration +"\n", Toast.LENGTH_SHORT).show();
 
                 // TO DO ***** OPEN EDIT Program Screen for the selected program
+               Intent i = new Intent(context, ProgramCreateEdit.class);
+               i.putExtra("MODE","EDIT");
+               i.putExtra("PROGID",programID);
+               i.putExtra("PROGNAME",name);
+               i.putExtra("DURATION",duration);
+               i.putExtra("NOTES",notes);
+               startActivity(i);
            }
         });
 
