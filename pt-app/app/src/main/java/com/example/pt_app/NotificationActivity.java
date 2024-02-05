@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 
-public class NotificationActivity extends AppCompactActivity{
+public class NotificationActivity extends AppCompatActivity{
     private static final String URL = "http://10.0.2.2:8000/";
     private RecyclerView recyclerView;
     private NotificationEventAdapter notificationEventAdapter;
