@@ -66,10 +66,10 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             }
 
             //Form parameters into a string
-            String data = "clientlogin&user=" + username + "&pass=" + password;
+            String data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
             // new way? : String data = "login.php?arg1=clientlogin&user=" + username + "&pass=" + password;
 
-            //Create new database connection
+            //Create new backend connection
             ServerConnection serverConnection = new ServerConnection();
             //Setup response value
             serverConnection.delegate = this;
@@ -90,7 +90,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
             //Reset the password input if incorrect
-        } else {;
+        } else {
             EditText passwordInput = findViewById(R.id.trainerPasswordInput);
             passwordInput.setText("");
         }

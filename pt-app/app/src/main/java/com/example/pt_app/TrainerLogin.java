@@ -35,15 +35,25 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     protected void onStart() {
         super.onStart();
 
-        SessionManager sessionManager = new SessionManager(TrainerLogin.this);
-        int userID = sessionManager.getSession();
+        //SessionManager sessionManager = new SessionManager(TrainerLogin.this);
+        //int userID = sessionManager.getSession();
 
         //if user is logged in
-        if (userID != -1){
-            //Change activity
-            Intent intent = new Intent (this, Calendar.class);
-            startActivity(intent);
-        }
+        //if (userID != -1){
+        //    //Change activity
+        //    Intent intent = new Intent (this, Calendar.class);
+        //    startActivity(intent);
+        //}
+
+        // Form parameters into a string
+        String data = "login.php?checkSession=True";
+
+        //Create new backend connection
+        ServerConnection serverConnection = new ServerConnection();
+        //Setup response value
+        serverConnection.delegate = this;
+        //Send data to server
+        serverConnection.execute(data);
     }
 
     public void openClientLogin (View view){
@@ -77,9 +87,9 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         }
 
         //Form parameters into a string
-        String data = "trainerlogin&user=" + username + "&pass=" + password;
+        String data = "login.php?accountType=trainerlogin&user=" + username + "&pass=" + password;
 
-        //Create new database connection
+        //Create new backend connection (Get rid of when session checks fully work - meaning just one server connection that stays up whilst on login activity)
         ServerConnection serverConnection = new ServerConnection();
         //Setup response value
         serverConnection.delegate = this;
@@ -89,6 +99,12 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
 
     //Get the result of async process
     public void processFinish(String result, String destination){
+        //Check for existing session data
+        if (!result.contains("No active session")) {
+            //Change activity
+            Intent intent = new Intent (this, Calendar.class);
+            startActivity(intent);
+        }
         //Check if login is successful
         if (result.contains("Login successful")){
             //Set session

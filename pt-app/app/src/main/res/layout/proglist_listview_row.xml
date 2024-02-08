@@ -25,14 +25,24 @@ android:layout_height = "wrap_content">
     android:singleLine = "true" />
     <!-- android:background = "@drawable/cell_shape" -->
 
-<TextView
-    android:id = "@+id/rProgListDuration"
-    android:layout_width = "0dp"
-    android:layout_height = "match_parent"
-    android:layout_weight = "1.5"
-    android:ellipsize = "end"
-    android:padding = "5dp"
-    android:singleLine = "true" />
+    <TextView
+        android:id = "@+id/rProgListDuration"
+        android:layout_width = "0dp"
+        android:layout_height = "match_parent"
+        android:layout_weight = "1.5"
+        android:ellipsize = "end"
+        android:padding = "5dp"
+        android:singleLine = "true" />
+    <!-- android:background = "@drawable/cell_shape" -->
+
+    <TextView
+        android:id = "@+id/rProgListNotes"
+        android:layout_width = "0dp"
+        android:layout_height = "match_parent"
+        android:layout_weight = "1.5"
+        android:ellipsize = "end"
+        android:padding = "5dp"
+        android:singleLine = "true" />
     <!-- android:background = "@drawable/cell_shape" -->
 
 </LinearLayout>
