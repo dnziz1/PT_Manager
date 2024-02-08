@@ -4,6 +4,7 @@ import android.app.Notification;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -19,12 +20,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class NotificationActivity extends AppCompatActivity{
-    private static final String URL = "http://10.0.2.2:8000/";
+    String String = "notifications.php";
     private RecyclerView recyclerView;
     private NotificationEventAdapter notificationEventAdapter;
     private List<Notification> notificationList;
@@ -37,38 +43,48 @@ public class NotificationActivity extends AppCompatActivity{
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        recyclerView.setAdapter(notificationEventAdapter);
         notificationList = new ArrayList<>();
 
-        //fetchDetails();
+        new FetchDetails().execute();
     }
 
-    //new database connection
-    ServerConnection serverConnection = new ServerConnection();
+    private class FetchDetails extends AsyncTask<Void, Void, Void> {
+        String data = "notifications.php";
 
-//    private void fetchDetails() {
-//        JsonArrayRequest request = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-//            @Override
-//            public void onResponse(JSONArray array) {
-//                for (int i=0;i<array.length();i++) {
-//                    try {
-//                        JSONObject object = array.getJSONObject(i);
-//                        String title=object.getString("title").trim();
-//                        String description = object.getString("details").trim();
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                    notificationEventAdapter = new NotificationEventAdapter(NotificationActivity.this,notificationList);
-//                    recyclerView.setAdapter(notificationEventAdapter);
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    Toast.makeText(NotificationActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        RequestQueue requestQueue = Volley.newRequestQueue(NotificationActivity.this);
-//        requestQueue.add((request));
-//        }
-//    }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                URL url = new URL(data);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append('\n');
+                }
+
+                reader.close();
+
+                JSONArray jsonArray = new JSONArray(sb.toString());
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String title = jsonObject.getString("title");
+                    String details = jsonObject.getString("details");
+                    Notification notification = new Notification();
+                    notificationList.add(notification);
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        //Get result of async process
+        public void processFinish(String result, String destination) {
+
+        }
+    }
 }

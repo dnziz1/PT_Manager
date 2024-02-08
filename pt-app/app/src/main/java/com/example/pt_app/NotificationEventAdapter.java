@@ -39,7 +39,7 @@ public class NotificationEventAdapter extends RecyclerView.Adapter<NotificationE
     public void onBindViewHolder(@NonNull NotificationEventAdapter.EventViewHolder holder, int position) {
         com.example.pt_app.Notification notification = activityList.get(position);
         holder.Title.setText(notification.getTitle());
-        holder.Description.setText(notification.getDescription());
+        holder.Details.setText(notification.getDetails());
     }
 
     @Override
@@ -54,12 +54,14 @@ public class NotificationEventAdapter extends RecyclerView.Adapter<NotificationE
 
     public class EventViewHolder extends RecyclerView.ViewHolder {
         TextView Title;
-        TextView Description;
+        TextView Details;
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             Title=itemView.findViewById(R.id.titleTextView);
-            Description=itemView.findViewById(R.id.descriptionTextView);
+            Details=itemView.findViewById(R.id.descriptionTextView);
         }
     }
 }
+
+
 
