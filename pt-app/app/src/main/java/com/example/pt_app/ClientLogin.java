@@ -16,6 +16,10 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
     EditText usernameInput;
     EditText passwordInput;
 
+    //Initialise username and password strings
+    String username;
+    String password;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +37,8 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
     public void logIn (View view){
         //Get input values for username and password
-        String username = usernameInput.getText().toString();
-        String password = passwordInput.getText().toString();
+        username = usernameInput.getText().toString();
+        password = passwordInput.getText().toString();
 
         // KEV TEST
         if (username.equals("admin") && password.equals("12345")) {
@@ -78,6 +82,10 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
     public void processFinish(String result, String destination){
         //Check if login is successful
         if (result.contains("Login successful")){
+            //Set session
+            StoredUser storedUser = new StoredUser(1,username);
+            SessionManager sessionManager = new SessionManager(ClientLogin.this);
+            sessionManager.saveSession(storedUser);
             //Change activity
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);

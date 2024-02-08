@@ -18,8 +18,8 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     EditText passwordInput;
 
     //Initialise username and password strings
-    String username = usernameInput.getText().toString();
-    String password = passwordInput.getText().toString();
+    String username;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +99,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
         //Reset the password input if incorrect
-        } else {;
+        } else {
             EditText passwordInput = findViewById(R.id.trainerPasswordInput);
             passwordInput.setText("");
         }
