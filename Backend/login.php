@@ -5,6 +5,9 @@ include_once 'sessionData.php';
 //Set the content type to text/plain
 header('Content-Type: text/plain');
 
+//Start session
+session_start();
+
 $servername = "localhost";
 $username = "root";
 $password = "test";
@@ -18,9 +21,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 echo "Connected successfully\r\n\n";
-
-//Start session
-session_start();
 
 //Check for any existing session data
 if (isset($_GET['checkSession'])) {
