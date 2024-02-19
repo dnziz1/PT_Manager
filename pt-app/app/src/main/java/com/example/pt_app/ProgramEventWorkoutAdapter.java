@@ -9,24 +9,24 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ProgramEventWorkoutTypeAdapter extends BaseAdapter {
-    public ArrayList<ProgramEventWorkoutTypeModel> workoutTypeList;
+public class ProgramEventWorkoutAdapter extends BaseAdapter {
+    public ArrayList<ProgramEventWorkoutModel> workoutList;
     Activity activity;
 
-    public ProgramEventWorkoutTypeAdapter(Activity activity, ArrayList<ProgramEventWorkoutTypeModel> workoutTypeList) {
+    public ProgramEventWorkoutAdapter(Activity activity, ArrayList<ProgramEventWorkoutModel> workoutList) {
         super();
         this.activity = activity;
-        this.workoutTypeList = workoutTypeList;
+        this.workoutList = workoutList;
     }
 
     @Override
     public int getCount() {
-        return workoutTypeList.size();
+        return workoutList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return workoutTypeList.get(position);
+        return workoutList.get(position);
     }
 
     @Override
@@ -35,8 +35,11 @@ public class ProgramEventWorkoutTypeAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        TextView mWorkoutTypeID;
+        TextView mWorkoutID;
+        TextView mMuscleGroup;
         TextView mName;
+        TextView mLevel;
+        TextView mEquipment;
     }
 
     @Override
@@ -48,16 +51,22 @@ public class ProgramEventWorkoutTypeAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.progevent_workouttype_spinner_row, null);
             holder = new ViewHolder();
-            holder.mWorkoutTypeID = (TextView) convertView.findViewById(R.id.rProgEventWorkoutTypeID);
-            holder.mName = (TextView) convertView.findViewById(R.id.rProgEventWorkoutTypeName);
+            holder.mWorkoutID = (TextView) convertView.findViewById(R.id.rProgEventWorkoutID);
+            holder.mMuscleGroup = (TextView) convertView.findViewById(R.id.rProgEventWorkoutMuscleGroup);
+            holder.mName = (TextView) convertView.findViewById(R.id.rProgEventWorkoutName);
+            holder.mLevel = (TextView) convertView.findViewById(R.id.rProgEventWorkoutLevel);
+            holder.mEquipment = (TextView) convertView.findViewById(R.id.rProgEventWorkoutEquipment);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        ProgramEventWorkoutTypeModel item = workoutTypeList.get(position);
-        holder.mWorkoutTypeID.setText(String.valueOf(item.getWorkoutTypeID()));
+        ProgramEventWorkoutModel item = workoutList.get(position);
+        holder.mWorkoutID.setText(String.valueOf(item.getWorkoutID()));
+        holder.mMuscleGroup.setText(item.getMuscleGroup().toString());
         holder.mName.setText(item.getName().toString());
+        holder.mLevel.setText(item.getLevel().toString());
+        holder.mEquipment.setText(item.getEquipment().toString());
 
         return convertView;
     }

@@ -40,6 +40,7 @@ public class ProgramListLVAdapter extends BaseAdapter {
         TextView mName;
         TextView mDuration;
         TextView mNotes;
+        TextView mTrainerIO;
     }
 
     @Override
@@ -51,10 +52,11 @@ public class ProgramListLVAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.proglist_listview_row, null);
             holder = new ViewHolder();
-            holder.mProgramID = (TextView) convertView.findViewById(R.id.rProgListProgID);
-            holder.mName = (TextView) convertView.findViewById(R.id.rProgListName);
-            holder.mDuration = (TextView) convertView.findViewById(R.id.rProgListDuration);
-            holder.mNotes = (TextView) convertView.findViewById(R.id.rProgListNotes);
+            holder.mProgramID = (TextView) convertView.findViewById(R.id.rProgListLVProgID);
+            holder.mName = (TextView) convertView.findViewById(R.id.rProgListLVName);
+            holder.mDuration = (TextView) convertView.findViewById(R.id.rProgListLVDuration);
+            holder.mNotes = (TextView) convertView.findViewById(R.id.rProgListLVNotes);
+            holder.mTrainerIO = (TextView) convertView.findViewById(R.id.rProgListLVTrainerID);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -65,6 +67,7 @@ public class ProgramListLVAdapter extends BaseAdapter {
         holder.mName.setText(item.getName().toString());
         holder.mDuration.setText(String.valueOf(item.getDuration()));
         holder.mNotes.setText(String.valueOf(item.getNotes()));
+        holder.mTrainerIO.setText(String.valueOf(item.getTrainerID()));
 
         return convertView;
     }

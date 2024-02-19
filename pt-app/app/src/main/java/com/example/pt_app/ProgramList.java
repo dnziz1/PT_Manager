@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class ProgramList extends AppCompatActivity implements AsyncResponse {
     AsyncResponse asyncResponse;
     Context context;
-    Button btnUpdateSearch;
+    Button btnUpdateSearch, btnCreateProgram;
     ListView lvPrograms;
     ArrayList<ProgramListLVModel> arrPrograms;
     ProgramListLVAdapter lvProgramsAdapter;
@@ -60,6 +60,18 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
 
                 UpdateListViewData();
                 //lvAdapter.notifyDataSetChanged();
+            }
+        });
+
+        btnCreateProgram = findViewById(R.id.progListCreateBtn);
+        btnCreateProgram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Open the Program Create activity
+                Intent i = new Intent(context, ProgramCreateEdit.class);
+                i.putExtra("MODE","CREATE");
+                startActivity(i);
+
             }
         });
 
@@ -111,23 +123,26 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                int programID = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListProgID)).getText().toString());
-                String name = ((TextView)view.findViewById(R.id.rProgListName)).getText().toString();
-               int duration = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListDuration)).getText().toString());
-               String notes = ((TextView)view.findViewById(R.id.rProgListNotes)).getText().toString();
+                int programID = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListLVProgID)).getText().toString());
+                String name = ((TextView)view.findViewById(R.id.rProgListLVName)).getText().toString();
+               int duration = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListLVDuration)).getText().toString());
+               String notes = ((TextView)view.findViewById(R.id.rProgListLVNotes)).getText().toString();
+               int trainerID = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListLVTrainerID)).getText().toString());
 
-                Toast.makeText(getApplicationContext(),
+
+               Toast.makeText(getApplicationContext(),
                         "ProgramID : " + programID +"\n"
                                 +"Name : " + name +"\n"
                                 +"Duration : " + duration +"\n", Toast.LENGTH_SHORT).show();
 
-                // TO DO ***** OPEN EDIT Program Screen for the selected program
+                // OPEN EDIT Program Screen for the selected program
                Intent i = new Intent(context, ProgramCreateEdit.class);
                i.putExtra("MODE","EDIT");
                i.putExtra("PROGID",programID);
                i.putExtra("PROGNAME",name);
                i.putExtra("DURATION",duration);
                i.putExtra("NOTES",notes);
+               i.putExtra("TRAINERID",trainerID);
                startActivity(i);
            }
         });
@@ -160,45 +175,6 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         overridePendingTransition(0, 0);
         startActivity(getIntent());
         overridePendingTransition(0, 0);
-    }
-    private void populateList() {
-
-        ProgramListLVModel item1, item2, item3, item4, item5;
-
-        item1 = new ProgramListLVModel(1, "30 day test plan", 30);
-        arrPrograms.add(item1);
-
-        item2 = new ProgramListLVModel(2, "40 day test plan", 40);
-        arrPrograms.add(item2);
-
-        item3 = new ProgramListLVModel(3, "50 day test plan", 50);
-        arrPrograms.add(item3);
-
-        item4 = new ProgramListLVModel(4, "60 day test plan", 60);
-        arrPrograms.add(item4);
-
-        item5 = new ProgramListLVModel(5, "60 day test plan", 60);
-        arrPrograms.add(item5);
-    }
-    private void populateListUpdate() {
-
-        arrPrograms.clear();
-        ProgramListLVModel item1, item2, item3, item4, item5;
-
-        item1 = new ProgramListLVModel(1, "30 day Abs workout", 30);
-        arrPrograms.add(item1);
-
-        item2 = new ProgramListLVModel(2, "40 day Hips and thighs plan", 40);
-        arrPrograms.add(item2);
-
-        item3 = new ProgramListLVModel(3, "50 day Cardiac Workout Plan", 50);
-        arrPrograms.add(item3);
-
-        item4 = new ProgramListLVModel(4, "60 day weight loss program", 60);
-        arrPrograms.add(item4);
-
-        item5 = new ProgramListLVModel(5, "60 day Full body workout", 60);
-        arrPrograms.add(item5);
     }
 
     //Get the result of async process
@@ -279,7 +255,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             for (int i = 0; i < ja.length(); i++) {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
-                    ProgramListLVModel program = new ProgramListLVModel(Integer.parseInt(jo.getString("programID")), jo.getString("name"), Integer.parseInt(jo.getString("duration")));
+                    ProgramListLVModel program = new ProgramListLVModel(Integer.parseInt(jo.getString("programID")), jo.getString("name"), Integer.parseInt(jo.getString("duration")),jo.getString("notes"), Integer.parseInt(jo.getString("trainerID")));
                     //program.setProgramID(jo.getInt("programID"));
                     //program.setName(jo.getString("name"));
                     //program.setDuration(jo.getInt("duration"));
