@@ -3,6 +3,7 @@ package com.example.pt_app;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import java.security.NoSuchAlgorithmException;
@@ -38,14 +39,14 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         //SessionManager sessionManager = new SessionManager(TrainerLogin.this);
         //int userID = sessionManager.getSession();
 
-        //if user is logged in
+        ////If user is logged in
         //if (userID != -1){
         //    //Change activity
         //    Intent intent = new Intent (this, Calendar.class);
         //    startActivity(intent);
         //}
 
-        // Form parameters into a string
+        //Form parameters into a string
         String data = "login.php?checkSession=True";
 
         //Create new backend connection
@@ -53,7 +54,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         //Setup response value
         serverConnection.delegate = this;
         //Send data to server
-        serverConnection.execute(data);
+        serverConnection.execute(data,"");
     }
 
     public void openClientLogin (View view){
@@ -94,19 +95,19 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         //Setup response value
         serverConnection.delegate = this;
         //Send data to server
-        serverConnection.execute(data);
+        serverConnection.execute(data,"");
     }
 
     //Get the result of async process
     public void processFinish(String result, String destination){
         //Check for existing session data
-        if (!result.contains("No active session")) {
+        if (result != null && !result.contains("No active session")) {
             //Change activity
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
         }
         //Check if login is successful
-        if (result.contains("Login successful")){
+        else if (result != null && result.contains("Login successful")){
             //Set session
             StoredUser storedUser = new StoredUser(1,username);
             SessionManager sessionManager = new SessionManager(TrainerLogin.this);

@@ -13,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ClientLogin extends AppCompatActivity implements AsyncResponse {
+    //Initialise EditText variables
     EditText usernameInput;
     EditText passwordInput;
 
@@ -28,6 +29,31 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         //Find EditTexts
         usernameInput = findViewById(R.id.clientUsernameInput);
         passwordInput = findViewById(R.id.clientPasswordInput);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //SessionManager sessionManager = new SessionManager(ClientLogin.this);
+        //int userID = sessionManager.getSession();
+
+        ////If user is logged in
+        //if (userID != -1){
+        //    //Change activity
+        //    Intent intent = new Intent (this, Calendar.class);
+        //    startActivity(intent);
+        //}
+
+        //Form parameters into a string
+        String data = "login.php?checkSession=True";
+
+        //Create new backend connection
+        ServerConnection serverConnection = new ServerConnection();
+        //Setup response value
+        serverConnection.delegate = this;
+        //Send data to server
+        serverConnection.execute(data,"");
     }
 
     public void openTrainerLogin (View view){
@@ -67,27 +93,36 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
             //Form parameters into a string
             String data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
-            // new way? : String data = "login.php?arg1=clientlogin&user=" + username + "&pass=" + password;
 
             //Create new backend connection
             ServerConnection serverConnection = new ServerConnection();
             //Setup response value
             serverConnection.delegate = this;
             //Send data to server
-            serverConnection.execute(data);
+            serverConnection.execute(data,"");
         }
     }
 
     //Get the result of async process
     public void processFinish(String result, String destination){
-        //Check if login is successful
-        if (result.contains("Login successful")){
+        //Check for existing session data
+        if (result != null && !result.contains("No active session")) {
             //Change activity
             Intent intent = new Intent (this, Calendar.class);
             startActivity(intent);
-            //Reset the password input if incorrect
+        }
+        //Check if login is successful
+        else if (result != null && result.contains("Login successful")){
+            //Set session
+            StoredUser storedUser = new StoredUser(1,username);
+            SessionManager sessionManager = new SessionManager(ClientLogin.this);
+            sessionManager.saveSession(storedUser);
+            //Change activity
+            Intent intent = new Intent (this, Calendar.class);
+            startActivity(intent);
+        //Reset the password input if incorrect
         } else {
-            EditText passwordInput = findViewById(R.id.trainerPasswordInput);
+            EditText passwordInput = findViewById(R.id.clientPasswordInput);
             passwordInput.setText("");
         }
     }

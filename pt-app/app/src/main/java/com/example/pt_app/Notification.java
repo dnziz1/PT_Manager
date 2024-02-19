@@ -1,3 +1,5 @@
+package com.example.pt_app;
+
 public class Notification {
     private String title;
     private String details;
