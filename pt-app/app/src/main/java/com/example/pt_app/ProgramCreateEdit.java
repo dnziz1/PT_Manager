@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +36,7 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_program_create_edit);
         asyncResponse = this;
+        context = this;
 
         tvProgName = findViewById(R.id.progCreateName);
         tvProgDuration = findViewById(R.id.progCreateDuration);
@@ -425,7 +427,9 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
             //Setup response value
             serverConnection.delegate = asyncResponse;
             //Send data to server
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
             serverConnection.execute(data, ID);
+        }
         //}
 
     }

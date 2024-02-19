@@ -27,8 +27,8 @@ public class ServerConnection extends AsyncTask<String, Void, String> {
 
         try {
             //Update the URL to include the parameters
-            //URL url = new URL("http://192.168.1.222:8000/" + data);
-            URL url = new URL("http://10.0.2.2:8000/" + data);
+            URL url = new URL("http://192.168.1.222:8000/" + data);
+            //URL url = new URL("http://10.0.2.2:8000/" + data);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
