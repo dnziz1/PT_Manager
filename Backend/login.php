@@ -1,26 +1,19 @@
 <?php
-// Include the sessionData.php file
-include_once 'sessionData.php';
-
 //Set the content type to text/plain
 header('Content-Type: text/plain');
 
-//Start session
-session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "test";
-$dbname = "appDB";
-
-//Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-//Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+//Check if sessions are already started
+if (session_status() == PHP_SESSION_NONE) {
+    //Start session
+    session_start();
 }
-echo "Connected successfully\r\n\n";
+
+// Include the sessionData.php file
+include_once 'sessionData.php';
+include_once 'DBConnection.php';
+
+//Create connection and set it as '$conn'.
+$conn = connectToDB();
 
 //Check for any existing session data
 if (isset($_GET['checkSession'])) {

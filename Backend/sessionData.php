@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 function setSessionData($userId, $username) {
     $_SESSION['userId'] = $userId;
     $_SESSION['username'] = $username;
