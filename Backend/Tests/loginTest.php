@@ -5,41 +5,51 @@ use PHPUnit\Framework\TestCase;
 require_once 'vendor/autoload.php';
 require_once 'bootstrap.php';
 
-include_once '../sessionData.php';
-include '../login.php';
-
 class loginTest extends TestCase
 {
+    public function testDBConnection()
+    {
+        include_once '../DBConnection.php';
+        
+        // Capture the output of the connectToDB function
+        ob_start();
+        $conn = connectToDB();
+        $output = ob_get_clean();
+
+        $conn->close();
+
+        // Assert that the output contains the expected message
+        $this->assertStringContainsString('Connected successfully', $output);
+    }
+
     public function testTrainerLoginSuccess()
     {
-        ob_start();
+        include_once '../login.php';
 
         $servername = "localhost";
         $username = "root";
         $password = "test";
         $dbname = "appDB";
-        
-        //$connMock = $this->createMock(mysqli::class);
-        //$connMock->method('query')->willReturn($this->createMock(mysqli_result::class));
-
+    
+        //Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);
 
-        //Simulate a trainer login request
+        $testUser = "SessionTest";
+        $testPass = "pass";
+
+        // Capture the output of the login.php script
+        ob_start();
+        
+        // Simulate a trainer login request using the test user's credentials
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_GET['accountType'] = 'trainerlogin';
-        $_GET['user'] = 'SessionTest';
-        $_GET['pass'] = 'pass';
-
-        ob_start();
+        $_GET['user'] = $testUser;
+        $_GET['pass'] = $testPass;
 
         $output = ob_get_clean();
 
+        $conn->close();
 
-        //Expect the output to contain specific strings
-        $this->expectOutputString('Connected successfully');
-        //$this->expectOutputString('Login successful');
-        //$this->assertStringContainsString('Connected successfully', $output);
-        //$this->assertStringContainsString('Login successful', $output);
-        
+        $this->assertStringContainsString('Login successful', $output);
     }
 }
