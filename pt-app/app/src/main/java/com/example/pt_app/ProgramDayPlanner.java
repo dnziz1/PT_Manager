@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,20 +19,17 @@ import org.json.JSONObject;
 
 public class ProgramDayPlanner extends AppCompatActivity implements AsyncResponse {
 
-    int passedProgID, passedProgDuration;
+    int passedProgID, passedProgDuration, passedTrainerID;
     String passedProgName;
+    boolean bolViewOnly;
     AsyncResponse asyncResponse;
-    //Context context;
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_program_day_planner);
         asyncResponse = this;
-        //context = this;
-
-        final int N = 10; // TO FIX **** test total number of textviews to add
-        final LinearLayout[] myDayHeaders = new LinearLayout[N]; // create an empty array;
-        final TextView[] myTextViews = new TextView[N]; // create an empty array;
+        context = this;
 
         // Store passed in variables
         Intent intent = getIntent();
@@ -39,6 +37,20 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
         passedProgID = intent.getIntExtra("PROGID",0);
         passedProgName = intent.getStringExtra("PROGNAME");
         passedProgDuration = intent.getIntExtra("DURATION",0);
+        passedTrainerID = intent.getIntExtra("TRAINERID",0);
+        bolViewOnly = false;
+
+        // If user isn't the creator of the program then set screen as view only
+        // ***************************************************************
+        // ***************************************************************
+        // ***************************************************************
+        // ***************************************************************
+        // ***************************************************************
+        // ***************************************************************
+        // UNCOMMENT LINE BELOW ONCE GOT SHARED PREFERENCE USERID*********
+
+        //if (!(passedTrainerID == logged in userid)) bolViewOnly = true;
+
         //passedProgNotes = intent.getStringExtra("NOTES");
         //bolCreateMode = true; // set default mode as creating a new program
 
@@ -53,7 +65,7 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
         //Setup response value
         serverConnection.delegate = asyncResponse;
         //Send data to server
-        serverConnection.execute(data);
+        serverConnection.execute(data,"");
 
     }
 
@@ -85,7 +97,7 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                 if (jo.getString("status").equals("Error")) {
                     Log.d("Error", jo.getString("msg"));
 
-                    new AlertDialog.Builder(this)
+                    new AlertDialog.Builder(context)
                             .setTitle("Error Retrieving Program Events")
                             .setMessage(jo.getString("msg"))
                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -126,6 +138,14 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
 
                         Button btnAddEvent = new Button(this);
                         btnAddEvent.setText("Add Event");
+                        btnAddEvent.setTag(day); // set button tag so it can be passed to the event create/edit activity
+
+                        if (bolViewOnly) {
+                            btnAddEvent.setEnabled(false);
+                            btnAddEvent.setFocusable(false);
+                            btnAddEvent.setActivated(false);
+                            btnAddEvent.setInputType(InputType.TYPE_NULL);
+                        }
 
                         // add day and Add event button on the same row
                         LLH.addView(rowTextView);
@@ -137,78 +157,100 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                         btnAddEvent.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                startActivity(new Intent(getApplicationContext(), ProgramEventCreate.class));
-                                //finish();
+                                // OPEN EDIT Program Event Screen for the selected program
+                                Intent i = new Intent(context, ProgramEventCreateEdit.class);
+                                i.putExtra("MODE","CREATE");
+                                i.putExtra("PROGID",passedProgID);
+
+                                // Get the day from the button tag
+                                i.putExtra("DAYID",String.valueOf(btnAddEvent.getTag()));
+                                startActivity(i);
                             }
                         });
 
                         // ITERATE THROUGH JSONArray AND UPDATE ACTIVITY FIELDS
-                        int dayID, eventID;
-                        String eventNotes;
+                        int dayID, eventID, workoutID;
+                        String workoutName, muscleGroup, level, equipment, eventNotes;
 
-                        //for (int i = 0; i < n; i++) {
                         // GET INDIVIDUAL JSON OBJECT FROM JSON ARRAY
-                        //if ( dataLength > 0) {
-                        for (int j = 0; j < jaData.length(); j++) {
-                            //try {
-                            jo = ja.getJSONObject(j);
-                            // RETRIEVE EACH JSON OBJECT'S FIELDS
+                        if (!(jaData == null)) {
+                            for (int j = 0; j < jaData.length(); j++) {
+                                //try {
+                                jo = jaData.getJSONObject(j);
+                                // RETRIEVE EACH JSON OBJECT'S FIELDS
 
-                            dayID = jo.getInt("dayID");
+                                dayID = jo.getInt("dayID");
 
-                            if (dayID == day) {
-                                eventID = jo.getInt("eventID");
-                                eventNotes = jo.getString("notes");
-                                //createTime = jo.getString("create_time");
+                                if (dayID == day) {
+                                    eventID = jo.getInt("eventID");
+                                    workoutID = jo.getInt("workoutID");
+                                    workoutName = jo.getString("exerciseName");
+                                    muscleGroup = jo.getString("muscleGroup");
+                                    level = jo.getString("level");
+                                    equipment = jo.getString("equipment");
+                                    eventNotes = jo.getString("notes");
 
-                                // CREATE DYNAMIC EVENT ROWS WITH EDIT BUTTON
-                                // build rowTextView from event and notes
+                                    // CREATE DYNAMIC EVENT ROWS WITH EDIT BUTTON
+                                    // build rowTextView from event and notes
+                                    LinearLayout LLE = new LinearLayout(this);
+                                    LLE.setOrientation(LinearLayout.HORIZONTAL);
+                                    LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    paramsE.setMargins(10, 10, 10, 10);
+                                    LLE.setLayoutParams(paramsE);
 
-                                LinearLayout LLE = new LinearLayout(this);
-                                LLE.setOrientation(LinearLayout.HORIZONTAL);
-                                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                paramsE.setMargins(10, 10, 10, 10);
-                                LLE.setLayoutParams(paramsE);
+                                    // create a new textview
+                                    final TextView rowTextViewE = new TextView(this);
+                                    rowTextViewE.setLayoutParams(paramsE);
 
-                                // create a new textview
-                                final TextView rowTextViewE = new TextView(this);
-                                rowTextViewE.setLayoutParams(paramsE);
+                                    // ******* PLACE event and EDIT button on same line
+                                    // clicking Edit event opens pop up window to amend workout, task or custom text
+                                    //rowTextViewE.setText(eventID + " : " + workoutID + " : " + workoutName + " : "  + muscleGroup + " : "  + level + " : " + eventNotes);
+                                    rowTextViewE.setText(eventID + " : " + workoutID + " : " + workoutName);
 
-                                // ******* PLACE event and EDIT button on same line
-                                // clicking Edit event opens pop up window to amend workout, task or custom text
+                                    Button btnEditEvent = new Button(this);
+                                    btnEditEvent.setText("Edit");
+                                    // set tags so that dayID and eventID can be passed to the event create/edit activity
+                                    btnEditEvent.setTag(day + ";" + eventID + ";" + workoutID + ";" + workoutName + ";" + eventNotes);
 
-                                //Linear layout horizontal
-
-                                // set some properties of rowTextView
-                                rowTextViewE.setText(eventID + " : " + eventNotes);
-
-                                Button btnEditEvent = new Button(this);
-                                btnEditEvent.setText("Edit");
-
-                                // add day and Add event button on the same row
-                                LLE.addView(rowTextViewE);
-                                LLE.addView(btnEditEvent);
-                                // add the textview to the linearlayout
-                                LinearLayout layoutE = (LinearLayout) findViewById(R.id.programDayPlanLayout);
-                                layoutE.addView(LLE);
-
-                                btnEditEvent.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        //Context mContext = MyApp.getAppContext();
-                                        //Intent iEditEvent = new Intent(getApplicationContext(), ProgramEventCreate.class);
-                                        //Intent iEditEvent = new Intent(mContext, ProgramEventCreate.class);
-                                        //startActivity(iEditEvent);
-                                        startActivity(new Intent(getApplicationContext(), ProgramEventCreate.class));
-
-                                        //mContext.startActivity(iEditEvent);
-                                        //finish();
+                                    if (bolViewOnly) {
+                                        btnEditEvent.setEnabled(false);
+                                        btnEditEvent.setFocusable(false);
+                                        btnEditEvent.setActivated(false);
+                                        btnEditEvent.setInputType(InputType.TYPE_NULL);
                                     }
-                                });
+
+                                    // add day and Add event button on the same row
+                                    LLE.addView(rowTextViewE);
+                                    LLE.addView(btnEditEvent);
+                                    // add the textview to the linearlayout
+                                    LinearLayout layoutE = (LinearLayout) findViewById(R.id.programDayPlanLayout);
+                                    layoutE.addView(LLE);
+
+                                    btnEditEvent.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            //Context mContext = MyApp.getAppContext();
+                                            //Intent iEditEvent = new Intent(getApplicationContext(), ProgramEventCreate.class);
+                                            //Intent iEditEvent = new Intent(mContext, ProgramEventCreate.class);
+                                            //startActivity(iEditEvent);
+                                            // OPEN EDIT Program Screen for the selected program
+                                            Intent i = new Intent(context, ProgramEventCreateEdit.class);
+                                            i.putExtra("MODE","EDIT");
+                                            i.putExtra("PROGID",passedProgID);
+                                            String[] data = btnEditEvent.getTag().toString().split(";",-1);
+                                            i.putExtra("DAYID",Integer.parseInt(data[0]));
+                                            i.putExtra("EVENTID",Integer.parseInt(data[1]));
+                                            i.putExtra("WORKOUTID",Integer.parseInt(data[2]));
+                                            i.putExtra("WORKOUTNAME",data[3]);
+                                            i.putExtra("EVENTNOTES",data[4]);
+                                            startActivity(i);
+                                        }
+                                    });
+                                }
+                                //} catch(JSONException e){
+                                //    throw new RuntimeException(e);
+                                //}
                             }
-                            //} catch(JSONException e){
-                            //    throw new RuntimeException(e);
-                            //}
                         }
                     }
                 }

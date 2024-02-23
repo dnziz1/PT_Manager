@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:id = "@+id/relativeLayout1"
 android:layout_width = "fill_parent"
-android:layout_height = "wrap_content">
-<!-- android:background = "@color/colorCell"> -->
+android:layout_height = "wrap_content" >
+<!-- android:background = "@color/colorCell" > -->
 
 <TextView
-    android:id = "@+id/rProgListLVProgID"
+    android:id = "@+id/rProgEventWorkoutID"
     android:layout_width = "0dp"
     android:layout_height = "match_parent"
     android:layout_weight = "1"
@@ -15,41 +16,41 @@ android:layout_height = "wrap_content">
     android:singleLine = "true" />
     <!-- android:background = "@drawable/cell_shape" -->
 
-<TextView
-    android:id = "@+id/rProgListLVName"
-    android:layout_width = "0dp"
-    android:layout_height = "match_parent"
-    android:layout_weight = "2"
-    android:ellipsize = "end"
-    android:padding = "5dp"
-    android:singleLine = "true" />
-    <!-- android:background = "@drawable/cell_shape" -->
-
     <TextView
-        android:id = "@+id/rProgListLVDuration"
+        android:id = "@+id/rProgEventWorkoutName"
         android:layout_width = "0dp"
         android:layout_height = "match_parent"
-        android:layout_weight = "1.5"
+        android:layout_weight = "2"
         android:ellipsize = "end"
         android:padding = "5dp"
         android:singleLine = "true" />
     <!-- android:background = "@drawable/cell_shape" -->
 
     <TextView
-        android:id = "@+id/rProgListLVNotes"
+        android:id = "@+id/rProgEventWorkoutMuscleGroup"
         android:layout_width = "0dp"
         android:layout_height = "match_parent"
-        android:layout_weight = "1.5"
+        android:layout_weight = "2"
         android:ellipsize = "end"
         android:padding = "5dp"
         android:singleLine = "true" />
     <!-- android:background = "@drawable/cell_shape" -->
 
     <TextView
-        android:id = "@+id/rProgListLVTrainerID"
+        android:id = "@+id/rProgEventWorkoutLevel"
         android:layout_width = "0dp"
         android:layout_height = "match_parent"
-        android:layout_weight = "1.5"
+        android:layout_weight = "2"
+        android:ellipsize = "end"
+        android:padding = "5dp"
+        android:singleLine = "true" />
+    <!-- android:background = "@drawable/cell_shape" -->
+
+    <TextView
+        android:id = "@+id/rProgEventWorkoutEquipment"
+        android:layout_width = "0dp"
+        android:layout_height = "match_parent"
+        android:layout_weight = "2"
         android:ellipsize = "end"
         android:padding = "5dp"
         android:singleLine = "true" />
