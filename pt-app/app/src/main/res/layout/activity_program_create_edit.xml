@@ -9,7 +9,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ProgramCreate"
+    tools:context=".ProgramCreateEdit"
     android:orientation="vertical">
     <ScrollView
         android:layout_width="match_parent"
@@ -93,14 +93,26 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/progCreateDayPlanBtn"
+                    android:id="@+id/progCreateCancelBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
                     android:background="?attr/colorPrimary"
-                    android:text="PLAN"
+                    android:text="Cancel"
+                    android:textColor="#FFF"
+                    android:textSize="20dp" />
+
+                <Button
+                    android:id="@+id/progCreateDeleteBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="?attr/colorPrimary"
+                    android:text="DELETE"
                     android:textColor="#FFF"
                     android:textSize="20dp" />
 
@@ -108,24 +120,24 @@
                     android:id="@+id/progCreateSaveBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="10dp"
                     android:background="?attr/colorPrimary"
                     android:text="SAVE"
                     android:textColor="#FFF"
                     android:textSize="20dp" />
-
-                <Button
-                    android:id="@+id/progCreateCancelBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
-                    android:layout_weight="1"
-                    android:background="?attr/colorPrimary"
-                    android:text="Cancel"
-                    android:textColor="#FFF"
-                    android:textSize="20dp" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/progCreateDayPlanBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:background="?attr/colorPrimary"
+                android:text="DAY PLANNER"
+                android:textColor="#FFF"
+                android:textSize="20dp" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

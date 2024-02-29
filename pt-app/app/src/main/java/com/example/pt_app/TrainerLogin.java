@@ -103,7 +103,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         //Check for existing session data
         if (result != null && !result.contains("No active session")) {
             //Change activity
-            Intent intent = new Intent (this, Calendar.class);
+            Intent intent = new Intent (this, Menu.class);
             startActivity(intent);
         }
         //Check if login is successful
@@ -113,7 +113,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
             SessionManager sessionManager = new SessionManager(TrainerLogin.this);
             sessionManager.saveSession(storedUser);
             //Change activity
-            Intent intent = new Intent (this, Calendar.class);
+            Intent intent = new Intent (this, Menu.class);
             startActivity(intent);
         //Reset the password input if incorrect
         } else {

@@ -16,19 +16,19 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Menu"
+            android:exported="false" />
+        <activity
+            android:name=".ProgramEventCreateEdit"
+            android:exported="false" />
+        <activity
             android:name=".ProgramCreateEdit"
             android:exported="false" />
         <activity
             android:name=".ProgramList"
             android:exported="false" />
         <activity
-            android:name=".ProgramEventCreate"
-            android:exported="false" />
-        <activity
             android:name=".ProgramDayPlanner"
-            android:exported="false" />
-        <activity
-            android:name=".ProgramCreate"
             android:exported="false" />
         <activity
             android:name=".Calendar"

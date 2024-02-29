@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -22,11 +23,13 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
 
     AsyncResponse asyncResponse;
     Context context;
-    Button btnPlan,btnSave,btnCancel;
+    Button btnDelete,btnSave,btnCancel,btnPlan;
     boolean bolCreateMode;
     String progName,progNotes,data;
     int progID,progDuration;
 
+    int userID;
+    boolean bolIsTrainer;
     TextView tvProgName,tvProgDuration,tvProgNotes;
 
     int passedProgID,passedProgDuration,passedTrainerID;
@@ -51,6 +54,7 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
         passedProgNotes = intent.getStringExtra("NOTES");
         passedTrainerID = intent.getIntExtra("TRAINERID",0);
         bolCreateMode = true; // set default mode as creating a new program
+        btnDelete = findViewById(R.id.progCreateDeleteBtn);
         btnSave = findViewById(R.id.progCreateSaveBtn);
 
         // Find out if creating or editing a program and set the screen accordingly
@@ -62,32 +66,84 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
             tvProgDuration.setText(String.valueOf(passedProgDuration));
             tvProgNotes.setText(passedProgNotes);
 
-            // TO DO - GET SHARED PREFERENCE - USERID
+            // TO DO - GET SHARED PREFERENCE - USERID AND WHETHER A TRAINER
             // **************************************
             // **************************************
             // **************************************
             // **************************************
+            // FOR NOW SET USERID = 99999, TRAINER = YES
+            userID = 99999;
+            bolIsTrainer = true;
+
             // AND UNCOMMENT FOLLOWING LINES
 
-//            if (!(passedTrainerID == Logged in userid) {
-//                tvProgName.setEnabled(false);
-//                tvProgName.setFocusable(false);
-//                tvProgName.setActivated(false);
-//                tvProgName.setInputType(InputType.TYPE_NULL);
-//                tvProgDuration.setEnabled(false);
-//                tvProgDuration.setFocusable(false);
-//                tvProgDuration.setActivated(false);
-//                tvProgDuration.setInputType(InputType.TYPE_NULL);
-//                tvProgNotes.setEnabled(false);
-//                tvProgNotes.setFocusable(false);
-//                tvProgNotes.setActivated(false);
-//                tvProgNotes.setInputType(InputType.TYPE_NULL);
-//                btnSave.setEnabled(false);
-//                btnSave.setFocusable(false);
-//                btnSave.setActivated(false);
-//                btnSave.setInputType(InputType.TYPE_NULL);
-//            }
+            if (!(passedTrainerID == userID)) {
+                tvProgName.setEnabled(false);
+                tvProgName.setFocusable(false);
+                tvProgName.setActivated(false);
+                tvProgName.setInputType(InputType.TYPE_NULL);
+                tvProgDuration.setEnabled(false);
+                tvProgDuration.setFocusable(false);
+                tvProgDuration.setActivated(false);
+                tvProgDuration.setInputType(InputType.TYPE_NULL);
+                tvProgNotes.setEnabled(false);
+                tvProgNotes.setFocusable(false);
+                tvProgNotes.setActivated(false);
+                tvProgNotes.setInputType(InputType.TYPE_NULL);
+                btnSave.setEnabled(false);
+                btnSave.setFocusable(false);
+                btnSave.setActivated(false);
+                btnSave.setInputType(InputType.TYPE_NULL);
+                btnDelete.setEnabled(false);
+                btnDelete.setFocusable(false);
+                btnDelete.setActivated(false);
+                btnDelete.setInputType(InputType.TYPE_NULL);
+            }
         }
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Ask user to confirm they wish to delete the program
+                //
+                new AlertDialog.Builder(context)
+                        .setTitle("Delete Program?")
+                        .setMessage("Are you sure you wish to delete this program ?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+
+                                SaveData("DELETEPROG");
+
+                                //close activity and return to the program list
+                                PreferenceManager.getDefaultSharedPreferences(context)
+                                        .edit()
+                                        .putBoolean("program_changed", true)
+                                        .apply();
+                                finish();
+                            }
+                        })
+
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                // Do nothing
+                                dialog.dismiss();
+                            }
+                        })
+
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+            }
+        });
+
+        if (bolCreateMode) {
+            btnDelete.setEnabled(false);
+            btnDelete.setFocusable(false);
+            btnDelete.setActivated(false);
+       }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,11 +255,25 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Close this screen
+                //close activity and return to the program list
+                PreferenceManager.getDefaultSharedPreferences(context)
+                        .edit()
+                        .putBoolean("program_changed", true)
+                        .apply();
                 finish();
             }
         });
 
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //close activity and return to the day planner
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean("program_changed", true)
+                .apply();
+        finish();
     }
 
     //Get the result of async process
@@ -253,7 +323,27 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                         passedProgDuration = progDuration;
                         passedProgNotes = progNotes;
 
-                        if (destination.equals("UPDATEPROG")) {
+                        if (destination.equals("DELETEPROG")) {
+                            new AlertDialog.Builder(context)
+                                    .setTitle("Delete Program")
+                                    .setMessage("The program was deleted successfully")
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Do nothing
+                                            //dialog.dismiss();
+                                            //close activity and return to the program list activity
+                                            PreferenceManager.getDefaultSharedPreferences(context)
+                                                    .edit()
+                                                    .putBoolean("program_changed", true)
+                                                    .apply();
+                                            finish();
+                                        }
+                                    })
+
+                                    .show();
+                        } else if (destination.equals("UPDATEPROG")) {
                             new AlertDialog.Builder(context)
                                     .setTitle("Update Program")
                                     .setMessage("The program was updated successfully")
@@ -291,13 +381,17 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
         progDuration = Integer.parseInt(tvProgDuration.getText().toString());
         progNotes = tvProgNotes.getText().toString();
 
-        if (bolCreateMode) {
-            // Create program
-            data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes;
+        if (ID.equals("DELETEPROG")) {
+            // Delete program which will also perform a cascading delete of events
+            data = "programs.php?arg1=dp&arg2=" + passedProgID;
         } else {
-            // Update program. Also remove events for days greater than the duration
-            data = "programs.php?arg1=upae&arg2=" + passedProgID + "&arg3=" + progName + "&arg4=" + progDuration + "&arg5=" + progNotes;
-
+            if (bolCreateMode) {
+                // Create program
+                data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes;
+            } else {
+                // Update program. Also remove events for days greater than the duration
+                data = "programs.php?arg1=upae&arg2=" + passedProgID + "&arg3=" + progName + "&arg4=" + progDuration + "&arg5=" + progNotes;
+            }
         }
 
         //Create new database connection

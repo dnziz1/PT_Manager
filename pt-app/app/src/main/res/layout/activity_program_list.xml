@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ProgramEventCreate"
+    tools:context=".ProgramList"
     android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                     android:id="@+id/progListNameSearch"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:hint="Search text criteria?"
+                    android:hint="Search criteria?"
                     android:inputType="textAutoComplete"
                     android:singleLine="true"
                     android:textSize="16dp">
@@ -68,7 +68,7 @@
                     android:id="@+id/progListMinDays"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
-                    android:hint="Minimum no of days?"
+                    android:hint="?"
                     android:inputType="textAutoComplete"
                     android:singleLine="true"
                     android:textSize="16dp">
@@ -85,7 +85,7 @@
                     android:id="@+id/progListMaxDays"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
-                    android:hint="Maximum no of days?"
+                    android:hint="?"
                     android:inputType="textAutoComplete"
                     android:singleLine="true"
                     android:textSize="16dp">

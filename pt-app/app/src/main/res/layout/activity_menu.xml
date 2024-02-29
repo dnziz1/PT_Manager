@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".menu"
+    android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/menuHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Main Menu"
+            android:textAlignment="center"
+            android:textSize="30dp"
+            android:textStyle="bold"></TextView>
+        <TextView
+            android:id="@+id/menuInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:text="Please select a feature below:"
+            android:textAlignment="center"
+            android:textSize="20dp">
+        </TextView>
+
+        <Button
+            android:id="@+id/menuCalendarBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="1"
+            android:background="?attr/colorPrimary"
+            android:text="Calendar"
+            android:textColor="#FFF"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/menuMessagesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="Messages"
+            android:textColor="#FFF"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/menuNotificationsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="Notifications"
+            android:textColor="#FFF"
+            android:textSize="20dp" />
+
+    <Button
+        android:id="@+id/menuProgramsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="?attr/colorPrimary"
+        android:text="Programs"
+        android:textColor="#FFF"
+        android:textSize="20dp" />
+
+</LinearLayout>

@@ -3,12 +3,15 @@ package com.example.pt_app;
 import static android.widget.AdapterView.*;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +41,9 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
     ArrayList<ProgramListTrainerModel> arrTrainers;
     ProgramListTrainerAdapter spTrainersAdapter ;
     TextView tvNameSearch, tvMinDays, tvMaxDays;
+    int userID;
+    String username;
+    boolean bolIsTrainer;
 
 
     @Override
@@ -51,6 +57,23 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         tvMinDays = findViewById(R.id.progListMinDays);
         tvMaxDays = findViewById(R.id.progListMaxDays);
 
+        // TO DO - GET SHARED PREFERENCE - USERID AND WHETHER A TRAINER
+        // **************************************
+        // **************************************
+        // **************************************
+        // **************************************
+        // FOR NOW SET USERID = 99999, TRAINER = YES
+        userID = 99999;
+        bolIsTrainer = true;
+
+        // AND UNCOMMENT FOLLOWING LINES
+
+        if (!bolIsTrainer) {
+            btnCreateProgram.setEnabled(false);
+            btnCreateProgram.setFocusable(false);
+            btnCreateProgram.setActivated(false);
+            btnCreateProgram.setInputType(InputType.TYPE_NULL);
+        }
 
         btnUpdateSearch = findViewById(R.id.progListSearchBtn);
         btnUpdateSearch.setOnClickListener(new View.OnClickListener() {
@@ -147,34 +170,8 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
            }
         });
 
-        // TEST DATA TO BE REPLACED BY DB DATA
-        //populateList();
-
-        //lvAdapter.notifyDataSetChanged();
-
         // Get program data from the database based on the selection criteria
         UpdateListViewData();
-
-/*        //data = "programs.php?arg1=gpbf&arg2=" + tvNameSearch.getText() + "&arg3=" + tvMinDays.getText() + "&arg4=" + tvMaxDays.getText() + "&arg5=" + spTrainerID.getSelectedItemPosition();
-        data = "programs.php?arg1=gpbf&arg2=" + tvNameSearch.getText() + "&arg3=" + tvMinDays.getText() + "&arg4=" + tvMaxDays.getText() + "&arg5=";
-
-        //Create new database connection
-        serverConnection = new ServerConnection();
-        //Setup response value
-        serverConnection.delegate = asyncResponse;
-        //Send data to server
-        serverConnection.execute(data,"listPrograms");
-*/
-    }
-
-    // Refresh activity when coming back to it to show any new programs
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(getIntent());
-        overridePendingTransition(0, 0);
     }
 
     //Get the result of async process
@@ -256,9 +253,6 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
                     ProgramListLVModel program = new ProgramListLVModel(Integer.parseInt(jo.getString("programID")), jo.getString("name"), Integer.parseInt(jo.getString("duration")),jo.getString("notes"), Integer.parseInt(jo.getString("trainerID")));
-                    //program.setProgramID(jo.getInt("programID"));
-                    //program.setName(jo.getString("name"));
-                    //program.setDuration(jo.getInt("duration"));
                     arrPrograms.add(program);
                 } catch (JSONException ex) {
                     throw new RuntimeException(ex);
@@ -267,99 +261,6 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         }
         lvProgramsAdapter.notifyDataSetChanged(); // this will make the adapter refresh the data in the spinner
 
-/*        // *********TO DO Code to read no of days from programs table
-                // Program ID can be passed from Program Select or from Program Create activities
-                // Use no of days  instead of N
-
-                // READ JSON row
-                // Get eventday from row
-                // If eventday = day loop i then place on screen otherwise continue i loop
-                int dataLength = ja.length();
-                JSONObject jo = null;
-
-
-                TextView tvProgID = findViewById(R.id.progListID);
-                TextView tvProgName = findViewById(R.id.progListName);
-                TextView tvProgDuration = findViewById(R.id.progListDuration);
-                //TextView tvProgNotes = findViewById(R.id.progListNotes);
-                TextView tvProgTrainerID = findViewById(R.id.progListTrainerID);
-                String progID = tvProgID.getText().toString();
-                String progName = tvProgName.getText().toString();
-                String progDuration = tvProgDuration.getText().toString();
-                String progNotes = tvProgNotes.getText().toString();
-                String trainerID = tvProgTrainerID.getText().toString();
-
-                for (int i=0; i<dataLength; i++) {
-
-                    try {
-                        JSONObject joData = ja.getJSONObject(i);
-                        JSONArray data = joData.getJSONArray("data");
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    LinearLayout LLH = new LinearLayout(this);
-                    LLH.setOrientation(LinearLayout.HORIZONTAL);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(10, 10, 10, 10);
-                    LLH.setLayoutParams(params);
-
-                    for (j = 0; j < data.length(); j++) {
-                        // create new textviews for each program row
-                        TextView tvRowProgID = new TextView(this);
-                        TextView tvRowProgName = new TextView(this);
-                        TextView tvRowProgDuration = new TextView(this);
-                        TextView tvRowProgNotes = new TextView(this);
-                        TextView tvRowProgTrainerID = new TextView(this);
-                        //rowTextView.setLayoutParams(params);
-
-                        //Linear layout horizontal
-                        // set some properties of rowTextView or something
-                        tvRowProgID.setText(progID);
-                        tvRowProgID.setTag(progID);
-                        tvRowProgID.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int selectedProgID = (int) v.getTag();
-
-                                startActivity(new Intent(getApplicationContext(), ProgramCreate.class));
-                            }
-                        });
-
-                        tvRowProgName.setText(progName);
-                        tvRowProgName.setTag(progID);
-
-                        tvRowProgName.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int selectedProgID = (int) v.getTag();
-
-                                startActivity(new Intent(getApplicationContext(), ProgramCreate.class));
-                            }
-                        });
-
-                        tvRowProgDuration.setText(progDuration);
-                        tvRowProgDuration.setTag(progID);
-
-                        tvRowProgDuration.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int selectedProgID = (int) v.getTag();
-
-                                startActivity(new Intent(getApplicationContext(), ProgramCreate.class));
-                            }
-                        });
-
-                        LLH.addView(tvRowProgID);
-                        LLH.addView(tvRowProgName);
-                        LLH.addView(tvRowProgDuration);
-                        // add the textview to the linearlayout
-                        LinearLayout layout = (LinearLayout) findViewById(R.id.programListLayout);
-                        layout.addView(LLH);
-                    }
-                }
-
-*/
     }
 
     private void UpdateListViewData() {
@@ -383,7 +284,24 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         serverConnection.delegate = asyncResponse;
         //Send data to server
         serverConnection.execute(data,"listPrograms");
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        if (prefs.getBoolean("program_changed", false)) {
+            prefs.edit().remove("program_changed").apply();
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+        }
     }
 }

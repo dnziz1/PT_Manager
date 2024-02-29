@@ -66,41 +66,35 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         username = usernameInput.getText().toString();
         password = passwordInput.getText().toString();
 
-        // KEV TEST
-        if (username.equals("admin") && password.equals("12345")) {
-            Intent intent = new Intent (this, ProgramList.class);
-            startActivity(intent);
-        } else {
-            try {
-                //Hash password using MD5
-                MessageDigest md = MessageDigest.getInstance("MD5");
-                md.update(password.getBytes());
-                byte[] bytes = md.digest();
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < bytes.length; i++) {
-                    sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-                }
-                String generatedPassword = sb.toString();
-
-                //HTML encode username and password to handle special characters
-                username = URLEncoder.encode(username, "UTF-8");
-                password = URLEncoder.encode(generatedPassword, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
+        try {
+            //Hash password using MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(password.getBytes());
+            byte[] bytes = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
+            String generatedPassword = sb.toString();
 
-            //Form parameters into a string
-            String data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
-
-            //Create new backend connection
-            ServerConnection serverConnection = new ServerConnection();
-            //Setup response value
-            serverConnection.delegate = this;
-            //Send data to server
-            serverConnection.execute(data,"");
+            //HTML encode username and password to handle special characters
+            username = URLEncoder.encode(username, "UTF-8");
+            password = URLEncoder.encode(generatedPassword, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
+
+        //Form parameters into a string
+        String data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
+
+        //Create new backend connection
+        ServerConnection serverConnection = new ServerConnection();
+        //Setup response value
+        serverConnection.delegate = this;
+        //Send data to server
+        serverConnection.execute(data,"");
     }
 
     //Get the result of async process
@@ -108,7 +102,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         //Check for existing session data
         if (result != null && !result.contains("No active session")) {
             //Change activity
-            Intent intent = new Intent (this, Calendar.class);
+            Intent intent = new Intent (this, Menu.class);
             startActivity(intent);
         }
         //Check if login is successful
@@ -118,7 +112,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             SessionManager sessionManager = new SessionManager(ClientLogin.this);
             sessionManager.saveSession(storedUser);
             //Change activity
-            Intent intent = new Intent (this, Calendar.class);
+            Intent intent = new Intent(this, Menu.class);
             startActivity(intent);
         //Reset the password input if incorrect
         } else {
