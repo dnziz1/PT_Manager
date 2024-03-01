@@ -48,11 +48,11 @@ if (isset($_GET['checkSession'])) {
             if ($result->num_rows > 0) {
                 //Retrieves ID value from the SQL result
                 $row = $result->fetch_assoc();
-                $userID = $row['tId'];
+                $userID = $row['trainerID'];
                 $username = $row['username'];
 
                 //Saves session data with user ID and username
-                setSessionData($userID, $user);
+                setSessionData($userID, $user, "trainer");
 
                 echo "Login successful";
 
@@ -75,13 +75,15 @@ if (isset($_GET['checkSession'])) {
             if ($result->num_rows > 0) {
                 //Retrieves ID value from the SQL result
                 $row = $result->fetch_assoc();
-                $userID = $row['cId'];
+                $userID = $row['clientID'];
                 $username = $row['username'];
 
                 //Saves session data with user ID and username
-                setSessionData($userID, $user);
+                setSessionData($userID, $user, "client");
 
                 echo "Login successful";
+
+                getSession();
 
             //If login doesn't exist
             } else {
