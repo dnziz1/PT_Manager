@@ -22,6 +22,8 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     String username;
     String password;
 
+    String data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +49,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         //}
 
         //Form parameters into a string
-        String data = "login.php?checkSession=True";
+        data = "login.php?checkSession=True";
 
         //Create new backend connection
         ServerConnection serverConnection = new ServerConnection();
@@ -88,7 +90,7 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         }
 
         //Form parameters into a string
-        String data = "login.php?accountType=trainerlogin&user=" + username + "&pass=" + password;
+        data = "login.php?accountType=trainerlogin&user=" + username + "&pass=" + password;
 
         //Create new backend connection (Get rid of when session checks fully work - meaning just one server connection that stays up whilst on login activity)
         ServerConnection serverConnection = new ServerConnection();
@@ -100,25 +102,36 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
 
     //Get the result of async process
     public void processFinish(String result, String destination){
-        //Check for existing session data
-        if (result != null && !result.contains("No active session")) {
-            //Change activity
-            Intent intent = new Intent (this, Calendar.class);
-            startActivity(intent);
+        Log.d("ServerTEST", "Result: " + result + ", Data: " + data);
+
+        //If trying to check session data, ONLY check session data
+        if ("login.php?checkSession=True".equals(data)) {
+            Log.d("ServerTEST", "Session true");
+            //Check for existing session data
+            if (result != null && !result.contains("No active session")) {
+                //Change activity
+                Intent intent = new Intent (this, Calendar.class);
+                startActivity(intent);
+            }
         }
-        //Check if login is successful
-        else if (result != null && result.contains("Login successful")){
-            //Set session
-            StoredUser storedUser = new StoredUser(1,username);
-            SessionManager sessionManager = new SessionManager(TrainerLogin.this);
-            sessionManager.saveSession(storedUser);
-            //Change activity
-            Intent intent = new Intent (this, Calendar.class);
-            startActivity(intent);
-        //Reset the password input if incorrect
-        } else {
-            EditText passwordInput = findViewById(R.id.trainerPasswordInput);
-            passwordInput.setText("");
+
+        //Otherwise, ONLY check login
+        else {
+            Log.d("ServerTEST", "Login true");
+            //Check if login is successful
+            if (result != null && result.contains("Login successful")){
+                //Set session
+                StoredUser storedUser = new StoredUser(1,username);
+                SessionManager sessionManager = new SessionManager(TrainerLogin.this);
+                sessionManager.saveSession(storedUser);
+                //Change activity
+                Intent intent = new Intent (this, Calendar.class);
+                startActivity(intent);
+                //Reset the password input if incorrect
+            } else {
+                EditText passwordInput = findViewById(R.id.trainerPasswordInput);
+                passwordInput.setText("");
+            }
         }
     }
 }
