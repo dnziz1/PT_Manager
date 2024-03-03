@@ -3,9 +3,13 @@ package com.example.pt_app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -23,6 +27,13 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
     String data;
 
+    //Account details
+    private static final String SHARED_PREFS = "sessionCache";
+    private static final String KEY_ACCOUNT_USER = "username";
+    private static final String KEY_ACCOUNT_TYPE = "accountType";
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,21 +42,13 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         //Find EditTexts
         usernameInput = findViewById(R.id.clientUsernameInput);
         passwordInput = findViewById(R.id.clientPasswordInput);
+
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        //SessionManager sessionManager = new SessionManager(ClientLogin.this);
-        //int userID = sessionManager.getSession();
-
-        ////If user is logged in
-        //if (userID != -1){
-        //    //Change activity
-        //    Intent intent = new Intent (this, Calendar.class);
-        //    startActivity(intent);
-        //}
 
         //Form parameters into a string
         data = "login.php?checkSession=True";
@@ -111,9 +114,35 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         if ("login.php?checkSession=True".equals(data)) {
             //Check for existing session data
             if (result != null && !result.contains("No active session")) {
-                //Change activity
-                Intent intent = new Intent(this, Calendar.class);
-                startActivity(intent);
+                //Get just JSON lines of result
+                String[] lines = result.split("\n");
+                StringBuilder jsonResult = new StringBuilder();
+                // Append lines starting from the fourth line
+                for (int i = 3; i < lines.length; i++) {
+                    jsonResult.append(lines[i]).append("\n");
+                }
+
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonResult.toString());
+
+                    //Get data from JSON
+                    //String userId = jsonObject.getString("userId");
+                    String username = jsonObject.getString("username");
+                    String accountType = jsonObject.getString("accountType");
+
+                    //Store current user in sharedPreferences
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(KEY_ACCOUNT_USER, username);
+                    editor.putString(KEY_ACCOUNT_TYPE, accountType);
+                    editor.apply();
+
+                    // Change activity
+                    Intent intent = new Intent(this, Calendar.class);
+                    startActivity(intent);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -121,10 +150,12 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         else {
             //Check if login is successful
             if (result != null && result.contains("Login successful")) {
-                //Set session
-                StoredUser storedUser = new StoredUser(1, username);
-                SessionManager sessionManager = new SessionManager(ClientLogin.this);
-                sessionManager.saveSession(storedUser);
+                //Store current user in sharedPreferences
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(KEY_ACCOUNT_USER, username);
+                editor.putString(KEY_ACCOUNT_TYPE, "client");
+                editor.apply();
+
                 //Change activity
                 Intent intent = new Intent(this, Calendar.class);
                 startActivity(intent);

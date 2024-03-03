@@ -1,11 +1,18 @@
 package com.example.pt_app;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.NoSuchAlgorithmException;
 
 import java.io.UnsupportedEncodingException;
@@ -24,6 +31,13 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
 
     String data;
 
+    //Account details
+    private static final String SHARED_PREFS = "sessionCache";
+    private static final String KEY_ACCOUNT_USER = "username";
+    private static final String KEY_ACCOUNT_TYPE = "accountType";
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,21 +46,13 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         //Find EditTexts
         usernameInput = findViewById(R.id.trainerUsernameInput);
         passwordInput = findViewById(R.id.trainerPasswordInput);
+
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        //SessionManager sessionManager = new SessionManager(TrainerLogin.this);
-        //int userID = sessionManager.getSession();
-
-        ////If user is logged in
-        //if (userID != -1){
-        //    //Change activity
-        //    Intent intent = new Intent (this, Calendar.class);
-        //    startActivity(intent);
-        //}
 
         //Form parameters into a string
         data = "login.php?checkSession=True";
@@ -102,28 +108,53 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
 
     //Get the result of async process
     public void processFinish(String result, String destination){
-        Log.d("ServerTEST", "Result: " + result + ", Data: " + data);
-
         //If trying to check session data, ONLY check session data
+        Log.d("ServerTEST", result);
         if ("login.php?checkSession=True".equals(data)) {
-            Log.d("ServerTEST", "Session true");
             //Check for existing session data
             if (result != null && !result.contains("No active session")) {
-                //Change activity
-                Intent intent = new Intent (this, Calendar.class);
-                startActivity(intent);
+                //Get just JSON lines of result
+                String[] lines = result.split("\n");
+                StringBuilder jsonResult = new StringBuilder();
+                // Append lines starting from the fourth line
+                for (int i = 3; i < lines.length; i++) {
+                    jsonResult.append(lines[i]).append("\n");
+                }
+
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonResult.toString());
+
+                    //Get data from JSON
+                    //String userId = jsonObject.getString("userId");
+                    String username = jsonObject.getString("username");
+                    String accountType = jsonObject.getString("accountType");
+
+                    //Store current user in sharedPreferences
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(KEY_ACCOUNT_USER, username);
+                    editor.putString(KEY_ACCOUNT_TYPE, accountType);
+                    editor.apply();
+
+                    // Change activity
+                    Intent intent = new Intent(this, Calendar.class);
+                    startActivity(intent);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         //Otherwise, ONLY check login
         else {
-            Log.d("ServerTEST", "Login true");
             //Check if login is successful
             if (result != null && result.contains("Login successful")){
-                //Set session
-                StoredUser storedUser = new StoredUser(1,username);
-                SessionManager sessionManager = new SessionManager(TrainerLogin.this);
-                sessionManager.saveSession(storedUser);
+                //Store current user in sharedPreferences
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(KEY_ACCOUNT_USER, username);
+                editor.putString(KEY_ACCOUNT_TYPE, "trainer");
+                editor.apply();
+
                 //Change activity
                 Intent intent = new Intent (this, Calendar.class);
                 startActivity(intent);

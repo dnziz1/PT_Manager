@@ -1,12 +1,12 @@
 <?php
-//Set the content type to text/plain
-header('Content-Type: text/plain');
-
 //Check if sessions are already started
 if (session_status() == PHP_SESSION_NONE) {
     //Start session
     session_start();
 }
+
+//Set the content type to text/plain
+header('Content-Type: text/plain');
 
 // Include the sessionData.php file
 include_once 'sessionData.php';
@@ -22,9 +22,11 @@ if (isset($_GET['checkSession'])) {
     if ($checkSession === "True") {
         //Check if a session exists
         if (isset($_SESSION['userId'])) {
-            echo "Session active";
+            echo "Session active\r\n\n";
+            //Send session data over as JSON
+            getSession();
         } else {
-            echo "No active session";
+            echo "No active session\r\n\n";
         }
         exit();
     }
@@ -54,7 +56,8 @@ if (isset($_GET['checkSession'])) {
                 //Saves session data with user ID and username
                 setSessionData($userID, $user, "trainer");
 
-                echo "Login successful";
+                echo "Login successful\r\n\n";
+                getSession();
 
             //If login doesn't exist
             } else {
@@ -81,8 +84,7 @@ if (isset($_GET['checkSession'])) {
                 //Saves session data with user ID and username
                 setSessionData($userID, $user, "client");
 
-                echo "Login successful";
-
+                echo "Login successful\r\n\n";
                 getSession();
 
             //If login doesn't exist
