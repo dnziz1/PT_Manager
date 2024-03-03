@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -29,6 +30,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
     //Account details
     private static final String SHARED_PREFS = "sessionCache";
+    private static final String KEY_ACCOUNT_ID = "userId";
     private static final String KEY_ACCOUNT_USER = "username";
     private static final String KEY_ACCOUNT_TYPE = "accountType";
 
@@ -114,35 +116,12 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         if ("login.php?checkSession=True".equals(data)) {
             //Check for existing session data
             if (result != null && !result.contains("No active session")) {
-                //Get just JSON lines of result
-                String[] lines = result.split("\n");
-                StringBuilder jsonResult = new StringBuilder();
-                // Append lines starting from the fourth line
-                for (int i = 3; i < lines.length; i++) {
-                    jsonResult.append(lines[i]).append("\n");
-                }
+                //Store certain session data as preferences
+                setPreferences(result);
 
-                try {
-                    JSONObject jsonObject = new JSONObject(jsonResult.toString());
-
-                    //Get data from JSON
-                    //String userId = jsonObject.getString("userId");
-                    String username = jsonObject.getString("username");
-                    String accountType = jsonObject.getString("accountType");
-
-                    //Store current user in sharedPreferences
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(KEY_ACCOUNT_USER, username);
-                    editor.putString(KEY_ACCOUNT_TYPE, accountType);
-                    editor.apply();
-
-                    // Change activity
-                    Intent intent = new Intent(this, Calendar.class);
-                    startActivity(intent);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                // Change activity
+                Intent intent = new Intent(this, Calendar.class);
+                startActivity(intent);
             }
         }
 
@@ -150,20 +129,48 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         else {
             //Check if login is successful
             if (result != null && result.contains("Login successful")) {
-                //Store current user in sharedPreferences
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_ACCOUNT_USER, username);
-                editor.putString(KEY_ACCOUNT_TYPE, "client");
-                editor.apply();
+                //Store certain session data as preferences
+                setPreferences(result);
+                Log.d("PreferencesDebug",sharedPreferences.getString(KEY_ACCOUNT_ID,null)+sharedPreferences.getString(KEY_ACCOUNT_USER,null)+sharedPreferences.getString(KEY_ACCOUNT_TYPE,null));
 
                 //Change activity
                 Intent intent = new Intent(this, Calendar.class);
                 startActivity(intent);
-                //Reset the password input if incorrect
+
+            //Reset the password input if incorrect
             } else {
                 EditText passwordInput = findViewById(R.id.clientPasswordInput);
                 passwordInput.setText("");
             }
+        }
+    }
+
+    public void setPreferences(String result){
+        //Get just JSON lines of result
+        String[] lines = result.split("\n");
+        StringBuilder jsonResult = new StringBuilder();
+        // Append lines starting from the fourth line
+        for (int i = 3; i < lines.length; i++) {
+            jsonResult.append(lines[i]).append("\n");
+        }
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult.toString());
+
+            //Get data from JSON
+            String userId = jsonObject.getString("userId");
+            String username = jsonObject.getString("username");
+            String accountType = jsonObject.getString("accountType");
+
+            //Store current user in sharedPreferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(KEY_ACCOUNT_ID, userId);
+            editor.putString(KEY_ACCOUNT_USER, username);
+            editor.putString(KEY_ACCOUNT_TYPE, accountType);
+            editor.apply();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }
