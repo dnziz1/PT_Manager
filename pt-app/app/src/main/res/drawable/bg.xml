@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="20dp"></corners>
+            <padding
+                android:left="4dp"
+                android:top="4dp"
+                android:right="4dp"
+                android:bottom="4dp"/>
+        </shape>
+    </item>
+    <!-- Circular green background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#EDEDE8"/> <!-- Green color -->
+            <corners android:radius="20dp"></corners>
+
+        </shape>
+    </item>
+</layer-list>
