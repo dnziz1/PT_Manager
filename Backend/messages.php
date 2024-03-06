@@ -1,24 +1,12 @@
 <?php
 
 // database connection
-function connectDatabase() {
-    $servername = "Server";
-    $username = "Daniel";
-    $password = "";
-    $database = "appDB";
+include_once 'DBConnection.php';
 
-    $conn = new mysqli($servername, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    return $conn;
-}
+$conn = connectDB();
 
 // get_messages
 function getMessages() {
-    $conn = connectDatabase();
 
     $result = $conn->query("SELECT * FROM messages");
 
@@ -34,7 +22,6 @@ function getMessages() {
 
 // add_message
 function addMessage($sender, $message) {
-    $conn = connectDatabase();
 
     $stmt = $conn->prepare("INSERT INTO messages (sender, message, timestamp) VALUES (?, ?, NOW())");
     $stmt->bind_param("ss", $sender, $message);
