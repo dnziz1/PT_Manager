@@ -1,10 +1,17 @@
 package com.example.pt_app;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.NoSuchAlgorithmException;
 
 import java.io.UnsupportedEncodingException;
@@ -21,6 +28,8 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     String username;
     String password;
 
+    String data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,15 +44,12 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
     protected void onStart() {
         super.onStart();
 
-        SessionManager sessionManager = new SessionManager(TrainerLogin.this);
-        int userID = sessionManager.getSession();
-
-        //if user is logged in
-        if (userID != -1){
-            //Change activity
-            Intent intent = new Intent (this, Calendar.class);
-            startActivity(intent);
-        }
+        //Create new backend connection
+        ServerConnection serverConnection = new ServerConnection();
+        //Setup response value
+        serverConnection.delegate = this;
+        //Open up login.php - sets up session data
+        serverConnection.execute("login.php","");
     }
 
     public void openClientLogin (View view){
@@ -76,30 +82,25 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
             throw new RuntimeException(e);
         }
 
-        //Form parameters into a string
-        String data = "trainerlogin&user=" + username + "&pass=" + password;
-
-        //Create new database connection
+        //Create new backend connection
         ServerConnection serverConnection = new ServerConnection();
         //Setup response value
         serverConnection.delegate = this;
-        //Send data to server
-        serverConnection.execute(data);
+        //Form parameters into a string
+        data = "login.php?accountType=trainerlogin&user=" + username + "&pass=" + password;
+        serverConnection.execute(data,"");
     }
 
     //Get the result of async process
     public void processFinish(String result, String destination){
         //Check if login is successful
-        if (result.contains("Login successful")){
-            //Set session
-            StoredUser storedUser = new StoredUser(1,username);
-            SessionManager sessionManager = new SessionManager(TrainerLogin.this);
-            sessionManager.saveSession(storedUser);
+        if (result != null && result.contains("Login successful")){
             //Change activity
-            Intent intent = new Intent (this, Calendar.class);
+            Intent intent = new Intent (this, LogoutTest.class);
             startActivity(intent);
+
         //Reset the password input if incorrect
-        } else {;
+        } else if (!result.contains("No account type provided")) {
             EditText passwordInput = findViewById(R.id.trainerPasswordInput);
             passwordInput.setText("");
         }

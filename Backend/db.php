@@ -1,10 +1,10 @@
 <?php
 
 	//Database server settings (CHANGE TO YOUR OWN SETTINGS)
-	$servername = "localhost:3316";
-	$username = "Kevin";
-	$password = "";
-	$dbname = "co5590";
+	$servername = "localhost";
+	$username = "root";
+	$password = "test";
+	$dbname = "appDB";
 
 	try {
 		$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);

@@ -1,8 +1,10 @@
-public class NotificationEventModel {
+package com.example.pt_app;
+
+public class Notification {
     private String title;
     private String details;
 
-    public NotificationEventModel(String title, String details) {
+    public Notification(String title, String details) {
         this.title = title;
         this.details = details;
     }
