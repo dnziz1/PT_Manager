@@ -102,7 +102,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         //Check if login is successful
         if (result != null && result.contains("Login successful")) {
             //Change activity
-            Intent intent = new Intent(this, LogoutTest.class);
+            Intent intent = new Intent(this, HomePage.class);
             startActivity(intent);
 
         //Reset the password input if incorrect
