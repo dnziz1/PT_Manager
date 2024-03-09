@@ -1,5 +1,9 @@
 <?php
-session_start();
+//Check if sessions are already started
+if (session_status() == PHP_SESSION_NONE) {
+    //Start session
+    session_start();
+}
 
 function setSessionData($userId, $username, $accountType) {
     $_SESSION['userId'] = $userId;
@@ -26,7 +30,7 @@ function getSession() {
 
         //Convert array to json then echo
         $jsonSessionData = json_encode($sessionData);
-        echo $jsonSessionData;
+        echo $jsonSessionData."\r\n\n";
     } else {
         //Redirect to login if session data is not present
         header("Location: login.php");
