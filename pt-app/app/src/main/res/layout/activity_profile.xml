@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="72dp"
-        android:text="Username"
+        android:text="Doc Brown"
         android:textColor="@android:color/black"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -87,7 +87,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- CardView 2 -->
+        
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -99,7 +99,7 @@
             app:layout_column="1"
             app:layout_row="0">
 
-            <!-- Similar content for CardView 2 -->
+          
 
         </androidx.cardview.widget.CardView>
 
@@ -110,12 +110,20 @@
             android:layout_row="1"
             android:layout_column="2"
             android:src="@drawable/ic_classes" />
+        
+        <ImageView
+            android:id="@+id/payment"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_row="1"
+            android:layout_column="3"
+            android:src="@drawable/ic_payment" />
 
-        <!-- Add more CardViews as needed -->
+        <!-- Add more CardViews for more icons i.e payment -->
 
     </GridLayout>
 
-    <!-- Toolbar -->
+    
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
@@ -133,20 +141,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_gravity="start"/>
-        <ImageView
-            android:id="@+id/home1"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_home"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"/>
+
     </androidx.appcompat.widget.Toolbar>
 
-
-
-    <!-- Guideline to position the bottom of the GridLayout -->
+    
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/bottomGuideline"
         android:layout_width="wrap_content"

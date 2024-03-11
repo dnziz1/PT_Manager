@@ -63,7 +63,8 @@ public class HomePage extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
+                Intent intent = new Intent(HomePage.this, Profile.class);
+                startActivity(intent);
             }
         });
 
