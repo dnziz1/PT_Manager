@@ -1,11 +1,11 @@
 package com.example.pt_app;
 
-public class ProgramListTrainerModel {
+public class ClassesTrainerModel {
 
     int trainerID;
     String name;
 
-    public ProgramListTrainerModel(int trainerID, String name) {
+    public ClassesTrainerModel(int trainerID, String name) {
         this.trainerID = trainerID;
         this.name = name;
     }

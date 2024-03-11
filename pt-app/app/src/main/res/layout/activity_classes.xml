@@ -1,9 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Classes">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+tools:context=".Classes"
+android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_margin="30dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Classes"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"></TextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Allows you to search for and view/create/edit classes. A client can also manage bookings. A trainer can also manage schedules"
+        android:textSize="16dp"></TextView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/classesBookingsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="BOOKINGS"
+            android:textColor="#FFF"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/classesSchedulesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="SCHEDULES"
+            android:textColor="#FFF"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black">
+    </TextView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Name Search:"
+            android:textSize="16dp">
+        </TextView>
+
+        <EditText
+            android:id="@+id/classesNameSearch"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="Search criteria?"
+            android:inputType="textAutoComplete"
+            android:singleLine="true"
+            android:textSize="16dp">
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Min Duration (mins):"
+            android:textSize="16dp">
+        </TextView>
+
+        <EditText
+            android:id="@+id/classesMinDuration"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="?"
+            android:inputType="textAutoComplete"
+            android:singleLine="true"
+            android:textSize="16dp">
+        </EditText>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Max Duration (mins):"
+            android:textSize="16dp">
+        </TextView>
+
+        <EditText
+            android:id="@+id/classesMaxDuration"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:hint="?"
+            android:inputType="textAutoComplete"
+            android:singleLine="true"
+            android:textSize="16dp">
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="86dp"
+            android:layout_height="wrap_content"
+            android:text="Trainer:"
+            android:textSize="16dp"></TextView>
+
+        <Spinner
+            android:id="@+id/classesTrainerID"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/classesSearchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="SEARCH"
+            android:textColor="#FFF"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/classesCreateBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="CREATE"
+            android:textColor="#FFF"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+    <ListView
+        android:id = "@+id/classesList"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:divider = "@null"/>
+</LinearLayout>
+</LinearLayout>

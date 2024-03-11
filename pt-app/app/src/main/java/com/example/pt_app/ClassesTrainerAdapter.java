@@ -9,11 +9,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ProgramListTrainerAdapter extends BaseAdapter {
-    public ArrayList<ProgramListTrainerModel> trainerList;
+public class ClassesTrainerAdapter extends BaseAdapter {
+    public ArrayList<ClassesTrainerModel> trainerList;
     Activity activity;
 
-    public ProgramListTrainerAdapter(Activity activity, ArrayList<ProgramListTrainerModel> trainerList) {
+    public ClassesTrainerAdapter(Activity activity, ArrayList<ClassesTrainerModel> trainerList) {
         super();
         this.activity = activity;
         this.trainerList = trainerList;
@@ -46,16 +46,16 @@ public class ProgramListTrainerAdapter extends BaseAdapter {
         LayoutInflater inflater = activity.getLayoutInflater();
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.proglist_trainer_spinner_row, null);
+            convertView = inflater.inflate(R.layout.classes_trainer_spinner_row, null);
             holder = new ViewHolder();
-            holder.mTrainerID = (TextView) convertView.findViewById(R.id.rProgListTrainerID);
-            holder.mName = (TextView) convertView.findViewById(R.id.rProgListTrainerName);
+            holder.mTrainerID = (TextView) convertView.findViewById(R.id.rClassesTrainerID);
+            holder.mName = (TextView) convertView.findViewById(R.id.rClassesTrainerName);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        ProgramListTrainerModel item = trainerList.get(position);
+        ClassesTrainerModel item = trainerList.get(position);
         holder.mTrainerID.setText(String.valueOf(item.getTrainerID()));
         holder.mName.setText(item.getName().toString());
 

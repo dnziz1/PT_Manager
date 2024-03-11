@@ -10,7 +10,7 @@ import android.widget.Button;
 
 public class Menu extends AppCompatActivity {
 
-    Button btnCalendar, btnMessages, btnNotifications, btnPrograms;
+    Button btnCalendar, btnMessages, btnNotifications, btnClasses, btnPrograms;
     Context context;
 
     @Override
@@ -45,6 +45,16 @@ public class Menu extends AppCompatActivity {
             public void onClick(View view) {
                 // Open the Program Create activity
                 Intent i = new Intent(context, NotificationActivity.class);
+                startActivity(i);
+            }
+        });
+
+        btnClasses = findViewById(R.id.menuClassesBtn);
+        btnPrograms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Open the Program Create activity
+                Intent i = new Intent(context, Classes.class);
                 startActivity(i);
             }
         });

@@ -7,7 +7,7 @@ android:layout_height = "wrap_content" >
 <!-- android:background = "@color/colorCell" > -->
 
 <TextView
-    android:id = "@+id/rProgListTrainerID"
+    android:id = "@+id/rClassesTrainerID"
     android:layout_width = "0dp"
     android:layout_height = "match_parent"
     android:layout_weight = "1"
@@ -17,7 +17,7 @@ android:layout_height = "wrap_content" >
     <!-- android:background = "@drawable/cell_shape" -->
 
 <TextView
-    android:id = "@+id/rProgListTrainerName"
+    android:id = "@+id/rClassesTrainerName"
     android:layout_width = "0dp"
     android:layout_height = "match_parent"
     android:layout_weight = "2"

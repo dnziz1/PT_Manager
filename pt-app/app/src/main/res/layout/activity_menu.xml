@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".menu"
+    tools:context=".Menu"
     android:orientation="vertical">
 
         <TextView
@@ -64,15 +64,26 @@
             android:textColor="#FFF"
             android:textSize="20dp" />
 
-    <Button
-        android:id="@+id/menuProgramsBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:background="?attr/colorPrimary"
-        android:text="Programs"
-        android:textColor="#FFF"
-        android:textSize="20dp" />
+        <Button
+            android:id="@+id/menuClassesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="Classes"
+            android:textColor="#FFF"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/menuProgramsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="?attr/colorPrimary"
+            android:text="Programs"
+            android:textColor="#FFF"
+            android:textSize="20dp" />
 
 </LinearLayout>
