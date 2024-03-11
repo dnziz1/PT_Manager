@@ -1,0 +1,6 @@
+.vscode/launch.json
+pt-app/.idea/compiler.xml
+pt-app/.idea/misc.xml
+pt-app/.idea/gradle.xml
+pt-app/app/build.gradle.kts
+pt-app/app/src/main/AndroidManifest.xml

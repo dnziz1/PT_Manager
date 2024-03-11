@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical">
+    <Toolbar
+        android:layout_width="410dp"
+        android:layout_height="80dp"
+        android:background="?attr/colorPrimary">
+
+        <ImageView
+            android:id="@+id/home"
+            android:layout_width="50dp"
+            android:layout_height="80dp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="2dp"
+            android:clickable="true"
+            android:src="@drawable/ic_toolbar" />
+    </Toolbar>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:textColor="#303030"
+            android:textColorHint="#A4A1A1"
+            android:hint="Message"
+            android:paddingLeft="15dp"
+            android:background="@drawable/bg"
+            android:id="@+id/edit_text_message"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:id="@+id/button_send"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/btnsend"/>
+
+    </LinearLayout>
+</LinearLayout>

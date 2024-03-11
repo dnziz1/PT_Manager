@@ -3,9 +3,14 @@ package com.example.pt_app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -21,6 +26,8 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
     String username;
     String password;
 
+    String data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,25 +42,12 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
     protected void onStart() {
         super.onStart();
 
-        //SessionManager sessionManager = new SessionManager(ClientLogin.this);
-        //int userID = sessionManager.getSession();
-
-        ////If user is logged in
-        //if (userID != -1){
-        //    //Change activity
-        //    Intent intent = new Intent (this, Calendar.class);
-        //    startActivity(intent);
-        //}
-
-        //Form parameters into a string
-        String data = "login.php?checkSession=True";
-
         //Create new backend connection
         ServerConnection serverConnection = new ServerConnection();
         //Setup response value
         serverConnection.delegate = this;
         //Send data to server
-        serverConnection.execute(data,"");
+        serverConnection.execute("login.php","");
     }
 
     public void openTrainerLogin (View view){
@@ -77,13 +71,13 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             }
             String generatedPassword = sb.toString();
 
-            //HTML encode username and password to handle special characters
-            username = URLEncoder.encode(username, "UTF-8");
-            password = URLEncoder.encode(generatedPassword, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            //Create new backend connection
+            ServerConnection serverConnection = new ServerConnection();
+            //Setup response value
+            serverConnection.delegate = this;
+            //Form parameters into a string
+            data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
+            serverConnection.execute(data,"");
         }
 
         //Form parameters into a string
@@ -95,27 +89,28 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         serverConnection.delegate = this;
         //Send data to server
         serverConnection.execute(data,"");
+            //Create new backend connection
+            ServerConnection serverConnection = new ServerConnection();
+            //Setup response value
+            serverConnection.delegate = this;
+            //Form parameters into a string
+            data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
+            serverConnection.execute(data,"");
+        }
     }
 
     //Get the result of async process
     public void processFinish(String result, String destination){
-        //Check for existing session data
-        if (result != null && !result.contains("No active session")) {
-            //Change activity
-            Intent intent = new Intent (this, Menu.class);
-            startActivity(intent);
-        }
+        Log.d("PHP RESULT: ",result);
+
         //Check if login is successful
-        else if (result != null && result.contains("Login successful")){
-            //Set session
-            StoredUser storedUser = new StoredUser(1,username);
-            SessionManager sessionManager = new SessionManager(ClientLogin.this);
-            sessionManager.saveSession(storedUser);
+        if (result != null && result.contains("Login successful")) {
             //Change activity
-            Intent intent = new Intent(this, Menu.class);
+            Intent intent = new Intent(this, HomePage.class);
             startActivity(intent);
+
         //Reset the password input if incorrect
-        } else {
+        } else if (!result.contains("No account type provided")) {
             EditText passwordInput = findViewById(R.id.clientPasswordInput);
             passwordInput.setText("");
         }

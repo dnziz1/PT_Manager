@@ -46,6 +46,12 @@
             android:name=".ProgramList"
             android:exported="false" />
         <activity
+            android:name=".LogoutTest"
+            android:exported="false" />
+        <activity
+            android:name=".ProgramEventCreate"
+            android:exported="false" />
+        <activity
             android:name=".ProgramDayPlanner"
             android:exported="false" />
         <activity
@@ -53,6 +59,21 @@
             android:exported="false" />
         <activity
             android:name=".TrainerLogin"
+            android:exported="false" />
+        <activity
+            android:name=".HomePage"
+            android:exported="false"/>
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".Profile"
+            android:exported="false" />
+        <activity
+            android:name=".Payment"
             android:exported="false" />
         <activity
             android:name=".ClientLogin"
