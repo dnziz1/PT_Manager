@@ -62,7 +62,8 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
         // KEV TEST
         if (username.equals("admin") && password.equals("12345")) {
-            Intent intent = new Intent (this, ProgramList.class);
+            //Intent intent = new Intent (this, ProgramList.class);
+            Intent intent = new Intent (this, HomePage.class);
             startActivity(intent);
         } else {
             try {

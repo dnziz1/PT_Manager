@@ -153,7 +153,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             }
         });
 
-        // Get program data from the database based on the selection criteria
+        // Get class data from the database based on the selection criteria
         UpdateListViewData();
     }
 
@@ -182,22 +182,20 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                     if (jo.getString("status").equals("OK")) {
                         jaData = jo.getJSONArray("data");
                         classesFound = jaData.length();
-                    }
 
-                    if (destination.equals("BOOKINGS")) {
-                        // Open the ClassBookings activity
-                        Intent i = new Intent(context, ClassBookings.class);
-                        // MAYBE PASS USERID i.putExtra("MODE","CREATE");
-                        startActivity(i);
-                    } else if (destination.equals("spinCLasses")) {
-                        //Populate Spinner
+                        if (destination.equals("listClasses")) {
+                            PopulateClassesView(jaData);
+                        } else if (destination.equals("spinTrainer")) {
+                            //Populate Spinner
+                            PopulateTrainerSpinner(jaData);
+                        }
                     }
 
                 }
             }
         } catch (Exception e) {
             new AlertDialog.Builder(context)
-                    .setTitle("Class Bookings - Serious Error")
+                    .setTitle("Classes - Serious Error")
                     .setMessage(e.getMessage())
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton("OK", null)
