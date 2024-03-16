@@ -40,6 +40,7 @@ public class ClassesLVAdapter extends BaseAdapter {
         TextView mDuration;
         TextView mNotes;
         TextView mTrainerIO;
+        TextView mTrainerName;
     }
 
     @Override
@@ -56,6 +57,7 @@ public class ClassesLVAdapter extends BaseAdapter {
             holder.mDuration = (TextView) convertView.findViewById(R.id.rClassesLVDuration);
             holder.mNotes = (TextView) convertView.findViewById(R.id.rClassesLVNotes);
             holder.mTrainerIO = (TextView) convertView.findViewById(R.id.rClassesLVTrainerID);
+            holder.mTrainerName = (TextView) convertView.findViewById(R.id.rClassesLVTrainerName);
             convertView.setTag(holder);
         } else {
             holder = (ClassesLVAdapter.ViewHolder) convertView.getTag();
@@ -67,6 +69,7 @@ public class ClassesLVAdapter extends BaseAdapter {
         holder.mDuration.setText(String.valueOf(item.getDuration()));
         holder.mNotes.setText(String.valueOf(item.getNotes()));
         holder.mTrainerIO.setText(String.valueOf(item.getTrainerID()));
+        holder.mTrainerName.setText(String.valueOf(item.getTrainerName()));
 
         return convertView;
     }

@@ -40,7 +40,7 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
     ProgramEventWorkoutAdapter spWorkoutTypesAdapter ;
 
     int passedProgID,passedProgDuration,passedDayID,passedEventID,passedTrainerID, passedWorkoutTypeID;
-    String passedMode,passedProgName, passedWorkoutName,passedWorkoutMuscleGroup,passedWorkoutLevel,passedWorkoutEquipment,passedEventNotes;
+    String passedMode,passedProgName, passedProgNotes,passedWorkoutName,passedWorkoutMuscleGroup,passedWorkoutLevel,passedWorkoutEquipment,passedEventNotes;
     boolean bolCreateMode;
 
     int workoutID,userID;
@@ -60,6 +60,7 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
         passedProgID = intent.getIntExtra("PROGID",0);
         passedProgName = intent.getStringExtra("PROGNAME");
         passedProgDuration = intent.getIntExtra("DURATION",0);
+        passedProgNotes = intent.getStringExtra("NOTES");
         passedDayID = intent.getIntExtra("DAYID",0);
         passedEventID = intent.getIntExtra("EVENTID",0);
         passedTrainerID = intent.getIntExtra("TRAINERID",0);
@@ -88,11 +89,11 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
         // AND UNCOMMENT FOLLOWING LINES
 
         if (!(passedTrainerID == userID)) {
-            spWorkoutTypes.setEnabled(false);
+            //spWorkoutTypes.setEnabled(false);
             spWorkoutTypes.setFocusable(false);
             spWorkoutTypes.setActivated(false);
             //spWorkoutTypes.setInputType(InputType.TYPE_NULL);
-            tvEventNotes.setEnabled(false);
+            //tvEventNotes.setEnabled(false);
             tvEventNotes.setFocusable(false);
             tvEventNotes.setActivated(false);
             tvEventNotes.setInputType(InputType.TYPE_NULL);
@@ -254,14 +255,14 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                 finish();
 */
                 Intent i = new Intent(context, ProgramDayPlanner.class);
+                i.putExtra("MODE","EDIT");
                 i.putExtra("PROGID",passedProgID);
                 i.putExtra("PROGNAME", passedProgName);
                 i.putExtra("DURATION",passedProgDuration);
+                i.putExtra("NOTES", passedProgNotes);
                 i.putExtra("TRAINERID",passedTrainerID);
                 startActivity(i);
-
                 finish();
-
             }
         });
 
@@ -277,12 +278,13 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                 .apply();
   */                                // OPEN EDIT Program Screen for the selected program
         Intent i = new Intent(context, ProgramDayPlanner.class);
+        i.putExtra("MODE","EDIT");
         i.putExtra("PROGID",passedProgID);
         i.putExtra("PROGNAME", passedProgName);
         i.putExtra("DURATION",passedProgDuration);
+        i.putExtra("NOTES", passedProgNotes);
         i.putExtra("TRAINERID",passedTrainerID);
         startActivity(i);
-
         finish();
     }
 
@@ -396,8 +398,6 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                // Do nothing
-                                                //dialog.dismiss();
                                                 //close activity and return to the day planner
 /*                                                PreferenceManager.getDefaultSharedPreferences(context)
                                                         .edit()
@@ -406,14 +406,14 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                                                 finish();
 */
                                                 Intent i = new Intent(context, ProgramDayPlanner.class);
+                                                i.putExtra("MODE","EDIT");
                                                 i.putExtra("PROGID",passedProgID);
                                                 i.putExtra("PROGNAME", passedProgName);
                                                 i.putExtra("DURATION",passedProgDuration);
+                                                i.putExtra("NOTES", passedProgNotes);
                                                 i.putExtra("TRAINERID",passedTrainerID);
                                                 startActivity(i);
-
                                                 finish();
-
                                             }
                                         })
                                         .show();

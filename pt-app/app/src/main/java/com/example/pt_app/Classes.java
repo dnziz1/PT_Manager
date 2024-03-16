@@ -30,7 +30,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
     ClassesTrainerAdapter trainerAdapter;
     ArrayList<ClassesLVModel> arrClasses;
     ClassesLVAdapter lvClassesAdapter;
-    Button btnBookings, btnSchedules, btnUpdateSearch;
+    Button btnBookings, btnSchedules, btnUpdateSearch,btnCreateClassSchedule;
     TextView tvNameSearch,tvMinDuration,tvMaxDuration;
     AsyncResponse asyncResponse;
     Context context;
@@ -70,17 +70,39 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             }
         });
 
-/**        btnCreateProgram = findViewById(R.id.classesCreateBtn);
-        btnCreateProgram.setOnClickListener(new View.OnClickListener() {
+        btnCreateClassSchedule = findViewById(R.id.classesCreateBtn);
+        btnCreateClassSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 // Open the Class Create activity
-                Intent i = new Intent(context, ClassCreateEdit.class);
-                i.putExtra("MODE","CREATE");
+                Intent i = new Intent(context, ClassSchedule.class);
                 startActivity(i);
             }
         });
-*/
+
+        btnBookings = findViewById(R.id.classesBookingsBtn);
+        btnBookings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Open the Class Create activity
+                Intent i = new Intent(context, ClassBookings.class);
+                startActivity(i);
+            }
+        });
+
+        btnSchedules = findViewById(R.id.classesSchedulesBtn);
+        btnSchedules.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Open the Class Create activity
+                Intent i = new Intent(context, ClassSchedules.class);
+                startActivity(i);
+            }
+        });
+
         arrTrainers = new ArrayList<ClassesTrainerModel>();
         spTrainers = findViewById(R.id.classesTrainerID);
         trainerAdapter = new ClassesTrainerAdapter(this, arrTrainers);
@@ -91,16 +113,11 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 // TODO Auto-generated method stub
-                int pos = spTrainers.getSelectedItemPosition();
+                //int pos = spTrainers.getSelectedItemPosition();
 
-                String trainerID = ((TextView)view.findViewById(R.id.rClassesTrainerID)).getText().toString();
-                String trainerName = ((TextView)view.findViewById(R.id.rClassesTrainerName)).getText().toString();
+                //String trainerID = ((TextView)view.findViewById(R.id.rClassesTrainerID)).getText().toString();
+                //String trainerName = ((TextView)view.findViewById(R.id.rClassesTrainerName)).getText().toString();
 
-                Toast.makeText(getApplicationContext(),
-                        "TrainerID : " + trainerID +"\n"
-                                +"Name : " + trainerName +"\n", Toast.LENGTH_SHORT).show();
-
-                // TO DO get ArrayList data using pos
             }
 
             @Override
@@ -135,11 +152,12 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                 int duration = Integer.parseInt(((TextView)view.findViewById(R.id.rClassesLVDuration)).getText().toString());
                 String notes = ((TextView)view.findViewById(R.id.rClassesLVNotes)).getText().toString();
                 int trainerID = Integer.parseInt(((TextView)view.findViewById(R.id.rClassesLVTrainerID)).getText().toString());
+                String trainerName = ((TextView)view.findViewById(R.id.rClassesLVTrainerName)).getText().toString();
 
-                Toast.makeText(getApplicationContext(),
-                        "ClassID : " + classID +"\n"
-                                +"Name : " + name +"\n"
-                                +"Duration : " + duration +"\n", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),
+                //        "ClassID : " + classID +"\n"
+                //                +"Name : " + name +"\n"
+                //                +"Duration : " + duration +"\n", Toast.LENGTH_SHORT).show();
 
                 // OPEN EDIT Class create/edit Screen for the selected program
                 Intent i = new Intent(context, ClassInfo.class);
@@ -149,6 +167,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                 i.putExtra("DURATION",duration);
                 i.putExtra("NOTES",notes);
                 i.putExtra("TRAINERID",trainerID);
+                i.putExtra("TRAINERNAME",trainerName);
                 startActivity(i);
             }
         });
@@ -235,7 +254,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             for (int i = 0; i < ja.length(); i++) {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
-                    ClassesLVModel newClass = new ClassesLVModel(Integer.parseInt(jo.getString("classID")), jo.getString("name"), Integer.parseInt(jo.getString("duration")),jo.getString("notes"), Integer.parseInt(jo.getString("trainerID")));
+                    ClassesLVModel newClass = new ClassesLVModel(Integer.parseInt(jo.getString("classID")), jo.getString("name"), Integer.parseInt(jo.getString("duration")),jo.getString("notes"), Integer.parseInt(jo.getString("trainerID")),jo.getString("trainer_name"));
                     arrClasses.add(newClass);
                 } catch (JSONException ex) {
                     throw new RuntimeException(ex);

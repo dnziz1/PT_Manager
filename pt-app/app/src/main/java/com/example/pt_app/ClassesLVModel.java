@@ -6,13 +6,15 @@ public class ClassesLVModel {
     private int duration;
     private String notes;
     private int trainerID;
+    private String trainerName;
 
-    public ClassesLVModel(int classID, String name, int duration, String notes, int trainerID) {
+    public ClassesLVModel(int classID, String name, int duration, String notes, int trainerID, String trainerName) {
         this.classID = classID;
         this.name = name;
         this.duration = duration;
         this.notes = notes;
         this.trainerID = trainerID;
+        this.trainerName = trainerName;
     }
 
     public int getClassID() {
@@ -31,6 +33,9 @@ public class ClassesLVModel {
     }
     public int getTrainerID() {
         return trainerID;
+    }
+    public String getTrainerName() {
+        return trainerName;
     }
 
 

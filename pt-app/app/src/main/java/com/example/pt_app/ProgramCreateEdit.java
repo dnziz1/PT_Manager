@@ -75,18 +75,17 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
             userID = 99999;
             bolIsTrainer = true;
 
-            // AND UNCOMMENT FOLLOWING LINES
-
+            // If the trainer is not the one that created the program then set activity as view only
             if (!(passedTrainerID == userID)) {
-                tvProgName.setEnabled(false);
+                //tvProgName.setEnabled(false);
                 tvProgName.setFocusable(false);
                 tvProgName.setActivated(false);
                 tvProgName.setInputType(InputType.TYPE_NULL);
-                tvProgDuration.setEnabled(false);
+                //tvProgDuration.setEnabled(false);
                 tvProgDuration.setFocusable(false);
                 tvProgDuration.setActivated(false);
                 tvProgDuration.setInputType(InputType.TYPE_NULL);
-                tvProgNotes.setEnabled(false);
+                //tvProgNotes.setEnabled(false);
                 tvProgNotes.setFocusable(false);
                 tvProgNotes.setActivated(false);
                 tvProgNotes.setInputType(InputType.TYPE_NULL);
@@ -116,11 +115,11 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                                 SaveData("DELETEPROG");
 
                                 //close activity and return to the program list
-                                PreferenceManager.getDefaultSharedPreferences(context)
-                                        .edit()
-                                        .putBoolean("program_changed", true)
-                                        .apply();
-                                finish();
+//                                PreferenceManager.getDefaultSharedPreferences(context)
+//                                        .edit()
+//                                        .putBoolean("program_changed", true)
+//                                        .apply();
+//                                finish();
                             }
                         })
 
@@ -210,11 +209,14 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                     // if update mode and none of the screen data has changed then just open the day planner screen
 
                     Intent i = new Intent(context, ProgramDayPlanner.class);
+                    i.putExtra("MODE",passedMode);
                     i.putExtra("PROGID",passedProgID);
                     i.putExtra("PROGNAME",progName);
                     i.putExtra("DURATION",progDuration);
+                    i.putExtra("NOTES",progNotes);
                     i.putExtra("TRAINERID",passedTrainerID);
                     startActivity(i);
+                    finish();
                 } else {
                     if (bolCreateMode) {
                         SaveData("PLAN");
@@ -256,10 +258,12 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
             @Override
             public void onClick(View view) {
                 //close activity and return to the program list
-                PreferenceManager.getDefaultSharedPreferences(context)
-                        .edit()
-                        .putBoolean("program_changed", true)
-                        .apply();
+//                PreferenceManager.getDefaultSharedPreferences(context)
+//                        .edit()
+//                        .putBoolean("program_changed", true)
+//                        .apply();
+                Intent i = new Intent(context, ProgramList.class);
+                startActivity(i);
                 finish();
             }
         });
@@ -269,10 +273,12 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
     public void onBackPressed() {
         super.onBackPressed();
         //close activity and return to the day planner
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putBoolean("program_changed", true)
-                .apply();
+//        PreferenceManager.getDefaultSharedPreferences(context)
+//                .edit()
+//                .putBoolean("program_changed", true)
+//                .apply();
+        Intent i = new Intent(context, ProgramList.class);
+        startActivity(i);
         finish();
     }
 
@@ -331,13 +337,13 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            // Do nothing
-                                            //dialog.dismiss();
                                             //close activity and return to the program list activity
-                                            PreferenceManager.getDefaultSharedPreferences(context)
-                                                    .edit()
-                                                    .putBoolean("program_changed", true)
-                                                    .apply();
+//                                            PreferenceManager.getDefaultSharedPreferences(context)
+//                                                    .edit()
+//                                                    .putBoolean("program_changed", true)
+//                                                    .apply();
+                                            Intent i = new Intent(context, ProgramList.class);
+                                            startActivity(i);
                                             finish();
                                         }
                                     })
@@ -353,11 +359,14 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                         } else if (destination.equals("PLAN")) {
                             // program created/updated successfully do now open the day planner activity
                             Intent i = new Intent(context, ProgramDayPlanner.class);
-                            i.putExtra("PROGID",progID);
-                            i.putExtra("PROGNAME", progName);
+                            i.putExtra("MODE",passedMode);
+                            i.putExtra("PROGID",passedProgID);
+                            i.putExtra("PROGNAME",progName);
                             i.putExtra("DURATION",progDuration);
+                            i.putExtra("NOTES",progNotes);
                             i.putExtra("TRAINERID",passedTrainerID);
                             startActivity(i);
+                            finish();
                         } else if (destination.equals("CREATEPROG")) {
                             new AlertDialog.Builder(context)
                                 .setTitle("Create Program")

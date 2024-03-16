@@ -94,7 +94,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
                 Intent i = new Intent(context, ProgramCreateEdit.class);
                 i.putExtra("MODE","CREATE");
                 startActivity(i);
-
+                finish();
             }
         });
 
@@ -108,14 +108,14 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 // TODO Auto-generated method stub
-                int pos = spTrainers.getSelectedItemPosition();
+                //int pos = spTrainers.getSelectedItemPosition();
 
-                String trainerID = ((TextView)view.findViewById(R.id.rProgListTrainerID)).getText().toString();
-                String trainerName = ((TextView)view.findViewById(R.id.rProgListTrainerName)).getText().toString();
+                //String trainerID = ((TextView)view.findViewById(R.id.rProgListTrainerID)).getText().toString();
+                //String trainerName = ((TextView)view.findViewById(R.id.rProgListTrainerName)).getText().toString();
 
-                Toast.makeText(getApplicationContext(),
-                        "TrainerID : " + trainerID +"\n"
-                                +"Name : " + trainerName +"\n", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),
+                //        "TrainerID : " + trainerID +"\n"
+                //                +"Name : " + trainerName +"\n", Toast.LENGTH_SHORT).show();
 
                 // TO DO get ArrayList data using pos
             }
@@ -167,6 +167,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
                i.putExtra("NOTES",notes);
                i.putExtra("TRAINERID",trainerID);
                startActivity(i);
+               finish();
            }
         });
 
@@ -291,7 +292,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         super.onBackPressed();
         finish();
     }
-    @Override
+/*    @Override
     protected void onResume() {
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -304,4 +305,5 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             overridePendingTransition(0, 0);
         }
     }
+ */
 }

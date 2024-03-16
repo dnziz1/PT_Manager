@@ -7,122 +7,276 @@ android:layout_width="match_parent"
 android:layout_height="wrap_content"
 tools:context=".ClassSchedule"
 android:orientation="vertical">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="30dp">
 
-        <TextView
-            android:id="@+id/classSchedTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="Class Schedule"
-            android:textAlignment="center"
-            android:textSize="20dp"
-            android:textStyle="bold"></TextView>
-        <TextView
-            android:id="@+id/classSchedDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="Allows you to view your class schedules with an option to cancel or create a new one"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Class Name"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:id="@+id/classSchedName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="Class Name"
-            android:inputType="textAutoComplete"
-            android:singleLine="true"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Class Duration (minutes)"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:id="@+id/classSchedDuration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="No. of minutes that the class lasts"
-            android:inputType="textAutoComplete"
-            android:digits="0123456789"
-            android:singleLine="true"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Notes"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:id="@+id/classSchedNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="What is the class about?"
-            android:inputType="textAutoComplete"
-            android:singleLine="false"
-            android:textSize="20dp">
-        </TextView>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_margin="30dp"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/classSchedCancelBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:background="?attr/colorPrimary"
-                android:text="CANCEL"
-                android:textColor="#FFF"
-                android:textSize="18dp" />
-
-            <Button
-                android:id="@+id/classSchedSaveBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="10dp"
-                android:background="?attr/colorPrimary"
-                android:text="SAVE"
-                android:textColor="#FFF"
-                android:textSize="18dp" />
-
-            <Button
-                android:id="@+id/classSchedDeleteBtn"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/classSchedTitle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="?attr/colorPrimary"
-                android:text="DELETE"
-                android:textColor="#FFF"
-                android:textSize="18dp" />
+                android:text="Class Schedule"
+                android:textAlignment="center"
+                android:textSize="20dp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/classSchedDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="Allows you to create a class schedule"
+                android:textSize="20dp"></TextView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Class"
+                android:textSize="20dp"></TextView>
+
+            <Spinner
+                android:id="@+id/classSchedClassID"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:text="Start Date"
+                    android:textSize="20dp"></TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="End Date"
+                    android:textSize="20dp"></TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:orientation="horizontal">
+
+
+                <EditText
+                    android:id="@+id/classSchedStartDate"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:hint="Start Date?"
+                    android:textSize="20dp"></EditText>
+
+                <EditText
+                    android:id="@+id/classSchedEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="End Date?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Days And Start Times?"
+                android:textSize="20dp"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedMon"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                android:text="Monday" />
+
+                <EditText
+                    android:id="@+id/classSchedMonTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedTue"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                    android:text="Tuesday" />
+
+                <EditText
+                    android:id="@+id/classSchedTueTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedWed"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                    android:text="Wednesday" />
+
+                <EditText
+                    android:id="@+id/classSchedWedTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedThu"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                    android:text="Thursday" />
+
+                <EditText
+                    android:id="@+id/classSchedThuTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedFri"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                    android:text="Friday" />
+
+                <EditText
+                    android:id="@+id/classSchedFriTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedSat"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                    android:text="Saturday" />
+
+                <EditText
+                    android:id="@+id/classSchedSatTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/classSchedSun"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="50dp"
+                    android:textSize="20dp"
+                    android:text="Sunday" />
+
+                <EditText
+                    android:id="@+id/classSchedSunTime"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Start Time?"
+                    android:textSize="20dp"></EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/classSchedCancelBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="70dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
+                    android:background="?attr/colorPrimary"
+                    android:text="CANCEL"
+                    android:textColor="#FFF"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/classSchedSaveBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="?attr/colorPrimary"
+                    android:text="SAVE"
+                    android:textColor="#FFF"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
         </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 </LinearLayout>

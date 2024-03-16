@@ -25,7 +25,7 @@ import org.w3c.dom.Text;
 public class ProgramDayPlanner extends AppCompatActivity implements AsyncResponse {
 
     int passedProgID, passedProgDuration, passedTrainerID,userID;
-    String passedProgName;
+    String passedMode,passedProgName,passedProgNotes;
     boolean bolViewOnly;
     AsyncResponse asyncResponse;
     Context context;
@@ -38,9 +38,11 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
 
         // Store passed in variables
         Intent intent = getIntent();
+        passedMode = intent.getStringExtra("MODE");
         passedProgID = intent.getIntExtra("PROGID",0);
         passedProgName = intent.getStringExtra("PROGNAME");
         passedProgDuration = intent.getIntExtra("DURATION",0);
+        passedProgNotes = intent.getStringExtra("NOTES");
         passedTrainerID = intent.getIntExtra("TRAINERID",0);
         bolViewOnly = false;
 
@@ -173,6 +175,7 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                                 i.putExtra("PROGID", passedProgID);
                                 i.putExtra("PROGNAME", passedProgName);
                                 i.putExtra("DURATION", passedProgDuration);
+                                i.putExtra("NOTES", passedProgNotes);
                                 String[] data = btnEditEvent.getTag().toString().split(";", -1);
                                 i.putExtra("DAYID", Integer.parseInt(data[0]));
                                 i.putExtra("EVENTID", Integer.parseInt(data[1]));
@@ -244,6 +247,7 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                 i.putExtra("PROGID",passedProgID);
                 i.putExtra("PROGNAME", passedProgName);
                 i.putExtra("DURATION", passedProgDuration);
+                i.putExtra("NOTES", passedProgNotes);
                 i.putExtra("TRAINERID",passedTrainerID);
 
                 // Get the day from the button tag
@@ -265,6 +269,14 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
     public void onBackPressed() {
         super.onBackPressed();
         //close activity and return to the program create/edit activity
+        Intent i = new Intent(context, ProgramCreateEdit.class);
+        i.putExtra("MODE",passedMode);
+        i.putExtra("PROGID",passedProgID);
+        i.putExtra("PROGNAME",passedProgName);
+        i.putExtra("DURATION",passedProgDuration);
+        i.putExtra("NOTES",passedProgNotes);
+        i.putExtra("TRAINERID",passedTrainerID);
+        startActivity(i);
         finish();
     }
 

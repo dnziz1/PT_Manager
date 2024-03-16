@@ -4,81 +4,94 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ClassInfo extends AppCompatActivity implements AsyncResponse {
+public class ClassInfo extends AppCompatActivity {
 
-    Button btnCancel,btnBook,btnSchedule;
-    AsyncResponse asyncResponse;
+    Button btnCancel,btnBook;
+    TextView tvClassName,tvDuration,tvNotes,tvTrainerName;
+    int userID,passedClassID,passedDuration,passedTrainerID;
+    String userType,passedClassName,passedClassNotes,passedTrainerName;
     Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_info);
-        asyncResponse = this;
         context = this;
 
+        // TO DO: GET USERID AND ACCOUNT TYPE FROM SHARED PREFERENCES
+        userID = 99999;
+        userType = "TRAINER";
+
+        // Store passed in variables
+        Intent intent = getIntent();
+        passedClassID = intent.getIntExtra("CLASSID",0);
+        passedClassName = intent.getStringExtra("CLASSNAME");
+        passedDuration = intent.getIntExtra("DURATION",0);
+        passedClassNotes = intent.getStringExtra("NOTES");
+        passedTrainerID = intent.getIntExtra("TRAINERID",0);
+        passedTrainerName = intent.getStringExtra("TRAINERNAME");
+        tvClassName = findViewById(R.id.classInfoName);
+        tvDuration = findViewById(R.id.classInfoDuration);
+        tvTrainerName = findViewById(R.id.classInfoTrainerName);
+        tvNotes = findViewById(R.id.classInfoNotes);
         btnCancel = findViewById(R.id.classInfoCancelBtn);
+        btnBook = findViewById(R.id.classInfoBookBtn);
+
+        if (userType.equals("CLIENT")) {
+            btnBook.setEnabled(true);
+        } else {
+            btnBook.setEnabled(false);
+        }
+
+        // Set activity fields to passed in data and not editable
+        tvClassName.setText(passedClassName);
+        //tvClassName.setEnabled(false);
+        tvClassName.setFocusable(false);
+        tvClassName.setActivated(false);
+        tvDuration.setText(String.valueOf(passedDuration));
+        //tvDuration.setEnabled(false);
+        tvDuration.setFocusable(false);
+        tvDuration.setActivated(false);
+        tvTrainerName.setText(passedTrainerName);
+        //tvTrainerName.setEnabled(false);
+        tvTrainerName.setFocusable(false);
+        tvTrainerName.setActivated(false);
+        tvNotes.setText(passedClassNotes);
+        //tvNotes.setEnabled(false);
+        tvNotes.setFocusable(false);
+        tvNotes.setActivated(false);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-
-
-        //Get class data
-
-
-    }
-
-    //Get the result of async process
-    public void processFinish(String result, String destination) {
-
-        try {
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
-
-            if (jo.length() > 0) {
-                if (jo.getString("status").equals("Error")) {
-                    Log.d("Error", jo.getString("msg"));
-
-                    new AlertDialog.Builder(context)
-                            .setTitle("Error Retrieving Class Information")
-                            .setMessage(jo.getString("msg"))
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton("OK", null)
-                            .show();
-                } else {
-                    JSONArray jaData = null;
-                    int bookingsFound = 0;
-
-                    if (jo.getString("status").equals("OK")) {
-                        jaData = jo.getJSONArray("data");
-                        bookingsFound = jaData.length();
-                    }
-
-                    if (destination.equals("DELETEBOOKING")) {
-
-                    }
-                }
+        btnBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                // OPEN ClassBook activity for the selected class
+                Intent i = new Intent(context, ClassBook.class);
+                i.putExtra("CLASSID",passedClassID);
+                i.putExtra("CLASSNAME",passedClassName);
+                i.putExtra("DURATION",passedDuration);
+                i.putExtra("NOTES",passedClassNotes);
+                i.putExtra("TRAINERID",passedTrainerID);
+                i.putExtra("TRAINERNAME",passedTrainerName);
+                startActivity(i);
             }
-        } catch(Exception e){
-            new AlertDialog.Builder(context)
-                    .setTitle("Class Info - Serious Error")
-                    .setMessage(e.getMessage())
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton("OK", null)
-                    .show();
-        }
+        });
+
     }
     @Override
     public void onBackPressed() {
