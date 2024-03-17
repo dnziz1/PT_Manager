@@ -18,6 +18,8 @@ if (isset($_SESSION['userId'])) {
     echo "Login successful\r\n\n";
     //Send session data over as JSON
     getSession();
+} else {
+    echo "Session unavailable";
 }
 
 //Check if the 'accountType' parameter is set in the GET request
@@ -83,6 +85,9 @@ if (isset($_GET['accountType'])) {
             echo "Login failed";
         }
     }
+    
+    mysqli_close($conn);
+
 } else {
     echo "No account type provided";
 }
