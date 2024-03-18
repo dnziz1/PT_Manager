@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,7 +31,7 @@ public class ClassInfo extends AppCompatActivity {
 
         // TO DO: GET USERID AND ACCOUNT TYPE FROM SHARED PREFERENCES
         userID = 99999;
-        userType = "TRAINER";
+        userType = "CLIENT";
 
         // Store passed in variables
         Intent intent = getIntent();
@@ -72,7 +73,11 @@ public class ClassInfo extends AppCompatActivity {
         tvNotes.setActivated(false);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
+                //close activity and return to the Classes activity
+                Intent i = new Intent(context, Classes.class);
+                startActivity(i);
                 finish();
             }
         });
@@ -80,15 +85,7 @@ public class ClassInfo extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
-                // OPEN ClassBook activity for the selected class
-                Intent i = new Intent(context, ClassBook.class);
-                i.putExtra("CLASSID",passedClassID);
-                i.putExtra("CLASSNAME",passedClassName);
-                i.putExtra("DURATION",passedDuration);
-                i.putExtra("NOTES",passedClassNotes);
-                i.putExtra("TRAINERID",passedTrainerID);
-                i.putExtra("TRAINERNAME",passedTrainerName);
-                startActivity(i);
+                BookClass();
             }
         });
 
@@ -97,6 +94,22 @@ public class ClassInfo extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         //close activity and return to the Classes activity
+        Intent i = new Intent(context, Classes.class);
+        startActivity(i);
+        finish();
+    }
+
+    public void BookClass() {
+        //close activity and display the ClassBooking activity so that the client can book a timeslot
+        Intent i = new Intent(context, ClassBook.class);
+
+        i.putExtra("CLASSID",passedClassID);
+        i.putExtra("CLASSNAME",passedClassName);
+        i.putExtra("DURATION",passedDuration);
+        i.putExtra("NOTES",passedClassNotes);
+        i.putExtra("TRAINERID",passedTrainerID);
+        i.putExtra("TRAINERNAME",passedTrainerName);
+        startActivity(i);
         finish();
     }
 

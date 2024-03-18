@@ -421,12 +421,11 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent i = new Intent(context, Classes.class);
+                startActivity(i);
                 finish();
             }
         });
-
-
-        //Get class data
 
     }
 
@@ -462,9 +461,9 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        finish();
                                         Intent i = new Intent(context, Classes.class);
                                         startActivity(i);
+                                        finish();
                                     }
                                 })
                                 .show();

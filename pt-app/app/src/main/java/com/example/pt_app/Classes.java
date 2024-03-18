@@ -201,15 +201,14 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                     if (jo.getString("status").equals("OK")) {
                         jaData = jo.getJSONArray("data");
                         classesFound = jaData.length();
-
-                        if (destination.equals("listClasses")) {
-                            PopulateClassesView(jaData);
-                        } else if (destination.equals("spinTrainer")) {
-                            //Populate Spinner
-                            PopulateTrainerSpinner(jaData);
-                        }
                     }
 
+                    if (destination.equals("listClasses")) {
+                        PopulateClassesView(jaData);
+                    } else if (destination.equals("spinTrainer")) {
+                        //Populate Spinner
+                        PopulateTrainerSpinner(jaData);
+                    }
                 }
             }
         } catch (Exception e) {
