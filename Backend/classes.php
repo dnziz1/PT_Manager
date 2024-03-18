@@ -32,9 +32,9 @@
 		case "gac":
 			getAllClasses($conn);
 			break;
-		case "gcbi":
-			getClassByID($conn,$arg2); // arg2 = classID	
-			break;
+//		case "gcbi":
+//			getClassByID($conn,$arg2); // arg2 = classID	
+//			break;
 		case "gcbf":
 			getClassesByFilter ($conn,$arg2,$arg3,$arg4,$arg5); 
 			// arg2 = optional class name criteria, arg3 = optional min duration (mins), arg4 = optional max duration (mins), arg5 = optional trainerID 
@@ -65,18 +65,30 @@
 //			getClassTimeslotsByClassID($conn,$arg2);
 //			// arg2 = classID
 //			break;
+		case "gtt":
+			getTrainerTimeslots($conn,$arg2);
+			// arg2 = trainerID
+			break;
 		case "gavct":
-			getAvailableClassTimeslots($conn,$arg2);
-			// arg2 = classID
+			getAvailableClassTimeslots($conn,$arg2,$arg3);
+			// arg2 = classID, arg3 = trainerID
 			break;
-		case "ict":
-			insertClassTimeslot ($conn,$arg2,$arg3,$arg4); 
-			// arg2 = classID, arg3 = trainerID, arg4 = timestamp
-			break;
+//		case "ict":
+//			insertClassTimeslot ($conn,$arg2,$arg3,$arg4); 
+//			// arg2 = classID, arg3 = trainerID, arg4 = timestamp
+//			break;
 		case "dct":
 			deleteClassTimeslot ($conn,$arg2); 
 			// arg2 = timeslotID
 			break;
+		case "as":
+			addSchedule ($conn,$arg2,$arg3,$arg4,$arg5,$arg6); 
+			// arg2 = trainerID, arg3 = classID, arg4 = startDate, arg5 = endDate, arg6 = jsonArray of timeslots
+			break;
+//		case "ds":
+//			deleteSchedule ($conn,$arg2,$arg3,$arg4,$arg5,$arg6); 
+//			// arg2 = trainerID, arg3 = scheduleID
+//			break;
 		case "gat":
 			getAllTrainers ($conn); 
 			break;
@@ -87,12 +99,10 @@
 	
 	$stmt = null;
 	$conn = null;
-
-
-
+	
 
 	function getClassesByFilter($conn,$classNameCriteria,$minDuration,$maxDuration,$trainerID) {
-		// GET CLASSES FROM THE CLASSES TABLE BASED ON FILTER CRITERIA
+		// GET CURRENT CLASSES THAT HAVE A FUTURE START DATE BASED ON FILTER CRITERIA
 		
 		// check which selection criteria has been passed in if any
 		$classNameSearch = ($classNameCriteria == Null) ? 0 : 1;
@@ -101,7 +111,10 @@
 		$trainerSearch = ($trainerID == Null) ? 0 : 1;
 		
 		// build sql based on search criteria
-		$sql = "SELECT * FROM classes ";
+		//$sql = "SELECT * FROM classes ";
+		// only retrieve classes that have a future bookable timeslot
+		//$sql = "SELECT c.classID,c.name,c.duration,c.maxOccupancy,c.notes,ts.trainerID,CONCAT(t.firstName, t.lastName) AS 'trainer_name' FROM classes c INNER JOIN class_timeslots ts ON ts.classID = c.classID INNER JOIN trainers t ON ts.trainerID = t.tId WHERE ts.timestamp > now() GROUP BY c.classID,c.name,c.duration,c.maxOccupancy,c.notes,ts.trainerID,CONCAT(t.firstName, t.lastName) ";
+		$sql = "SELECT c.classID,c.name,c.duration,c.maxOccupancy,c.notes,cs.trainerID,CONCAT(t.firstName, t.lastName) AS 'trainer_name' FROM classes c INNER JOIN class_schedules cs ON cs.classID = c.classID INNER JOIN class_timeslots ts ON cs.scheduleID = ts.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId ";		
 		$keyword = "WHERE";
 				
 		// check if program name filter criteria is passed in criteria 
@@ -129,6 +142,7 @@
 			$keyword = "AND";
 		}
 
+		$sql = $sql . $keyword . " cs.startDate > now() GROUP BY c.classID,c.name,c.duration,c.maxOccupancy,c.notes,cs.trainerID,CONCAT(t.firstName, t.lastName) "; 		
 		//echo $sql;
 	
 		try {
@@ -197,7 +211,7 @@
 	}
 
 
-	function getClassByID($conn,$classID) {
+/*	function getClassByID($conn,$classID) {
 		// GET A SPECIFIC CLASS FROM THE CLASSES TABLE
 
 		if($classID == Null) {
@@ -233,9 +247,10 @@
 			echo json_encode($arr);
 		}
 	}
-	
+*/	
 		function getClassBookingsByClientID($conn,$clientID) {
 		// GET ALL CLASS BOOKINGS FOR A PARTICULAR CLIENT FROM THE CLASS_BOOKINGS TABLE
+		// get only those that have a future start date
 
 		if($clientID == Null) {
 			$arr = ["status" => "Error","msg" => "Class bookings not retrieved - Invalid blank clientID"];
@@ -244,7 +259,8 @@
 
 		try {
 			// prepare sql and bind parameters
-			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN classes c ON ts.classID = c.classID WHERE cb.clientID = :clientID");
+//			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN classes c ON ts.classID = c.classID WHERE cb.clientID = :clientID");
+			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId WHERE cb.clientID = :clientID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
 			$stmt->bindParam(':clientID', $clientID, PDO::PARAM_INT);
 
 			$stmt->execute();
@@ -287,7 +303,8 @@
 		try {
 			//First check max occupancy hasn't been reached
 			// prepare sql and bind parameters
-			$stmt = $conn->prepare("SELECT COUNT(*) AS 'BookedCount',c.maxOccupancy FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN classes c ON ts.classID = c.classID WHERE cb.timeslotID = :timeslotID");
+			//$stmt = $conn->prepare("SELECT COUNT(*) AS 'BookedCount',c.maxOccupancy FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN classes c ON ts.classID = c.classID WHERE cb.timeslotID = :timeslotID");
+			$stmt = $conn->prepare("SELECT ts.timeslotID,c.maxOccupancy, COUNT(cb.classBookingID) FROM classes c INNER JOIN class_schedules cs ON c.classID = cs.classID INNER JOIN class_timeslots ts ON cs.scheduleID = ts.scheduleID LEFT JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID WHERE ts.timeslotID = :timeslotID GROUP BY ts.timeslotID,c.maxOccupancy");
 			$stmt->bindParam(':timeslotID', $timeslotID, PDO::PARAM_INT);
 			
 			$stmt->execute();
@@ -366,8 +383,43 @@
 		}
 	}
 	
+	function getTrainerTimeslots($conn,$trainerID) {
+		// GET FUTURE DATED TIMESLOTS FOR A TRAINER
+
+		if($trainerID == Null) {
+			$arr = ["status" => "Error","msg" => "Trainer class timeslots not retrieved - Invalid blank TrainerID"];
+			die(json_encode($arr));
+		}
+
+		try {
+			// prepare sql and bind parameters
+			$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',t.*,ts.* FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId WHERE cs.trainerID = :trainerID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+			$stmt->bindParam(':trainerID', $trainerID, PDO::PARAM_INT);
+			$stmt->execute();
+		} catch(PDOException $e) {
+			$arr = ["status" => "Error","msg" => "PDO exception retrieving trainer class timeslots: " . $e->getMessage()];
+			die(json_encode($arr));
+		}
 	
-	function getAvailableClassTimeslots($conn,$classID) {
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ($result) {
+			$data = array();
+
+			foreach ($result as $row) {
+				$data[] = $row;
+			}
+			
+			// Output the results as json data
+			$arr = ["status" => "OK","msg" => "Trainer class timeslots retrieved successfully","data" => $data];
+			echo json_encode($arr);
+		} else {
+			// Return code is OKND (Query ran ok but no data to return which is not necessarily an error)
+			$arr = ["status" => "OKND","msg" => "No trainer class timeslots found","data" => Null];
+			echo json_encode($arr);
+		}
+	}
+
+	function getAvailableClassTimeslots($conn,$classID,$trainerID) {
 		// GET TIMESLOTS FOR A CLASS. EXCLUDE THOSE THAT ALREADY HAVE MAX OCCUPANCY
 
 		if($classID == Null) {
@@ -375,10 +427,19 @@
 			die(json_encode($arr));
 		}
 
+		if($trainerID == Null) {
+			$arr = ["status" => "Error","msg" => "Class timeslots not retrieved - Invalid blank TrainerID"];
+			die(json_encode($arr));
+		}
+
 		try {
 			// prepare sql and bind parameters
-			$stmt = $conn->prepare("SELECT * FROM class_timeslots ts INNER JOIN classes c ON ts.classID = c.classID INNER JOIN (SELECT ts.timeslotID, COUNT(*) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID GROUP BY ts.timeslotID) bc ON ts.timeslotID = bc.timeslotID WHERE ts.classID= :classID");
+			//$stmt = $conn->prepare("SELECT * FROM class_timeslots ts INNER JOIN classes c ON ts.classID = c.classID INNER JOIN (SELECT ts.timeslotID, COUNT(*) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID GROUP BY ts.timeslotID) bc ON ts.timeslotID = bc.timeslotID WHERE ts.classID= :classID");
+			//$stmt = $conn->prepare("SELECT * FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId INNER JOIN (SELECT ts.timeslotID, COUNT(*) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID GROUP BY ts.timeslotID) cb ON ts.timeslotID = cb.timeslotID WHERE ts.classID= :classID" WHERE cs.classID = :c1assID AND cs.trainerID = :trainerID  AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+			//$stmt = $conn->prepare("SELECT cs.*,ts.*,t.*,IFNULL(cb.BookedCount,0) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId LEFT JOIN (SELECT timeslotID, COUNT(*) AS 'BookedCount' FROM class_bookings GROUP BY timeslotID) cb ON ts.timeslotID = cb.timeslotID WHERE cs.classID = :classID AND cs.trainerID = :trainerID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+			$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',ts.*, COUNT(cb.timeslotID) AS Total FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId LEFT JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID WHERE cs.classID = :classID AND cs.trainerID = :trainerID AND cs.startDate > now() GROUP BY ts.timeslotID HAVING COUNT(cb.timeslotID) < c.maxOccupancy ORDER BY cs.startDate,ts.startTime");
 			$stmt->bindParam(':classID', $classID, PDO::PARAM_INT);
+			$stmt->bindParam(':trainerID', $trainerID, PDO::PARAM_INT);
 			$stmt->execute();
 		} catch(PDOException $e) {
 			$arr = ["status" => "Error","msg" => "PDO exception retrieving class timeslots: " . $e->getMessage()];
@@ -390,10 +451,7 @@
 			$data = array();
 
 			foreach ($result as $row) {
-				// ignore class timeslot if already has max occupancy
-				if ($row['BookedCount'] < $row['maxOccupancy']) {
-					$data[] = $row;
-				}
+				$data[] = $row;
 			}
 			
 			// Output the results as json data
@@ -407,7 +465,7 @@
 	}
 
 	
-	function insertClassTimeslot($conn,$classID,$trainerID,$timestamp) {
+/*	function insertClassTimeslot($conn,$classID,$trainerID,$timestamp) {
 		// INSERT A NEW CLASS TIMESLOT TO THE CLASS_TIMESLOTS TABLE
 
 		if($classID == Null) {
@@ -450,6 +508,7 @@
 			die(json_encode($arr));
 		}
 	}
+*/
 	
 	function deleteClassTimeslot($conn,$classTimeslotID) {
 		// DELETE A SPECIFIC CLASS TIMESLOT FROM THE CLASS_TIMESLOTS TABLE
@@ -463,7 +522,7 @@
 		try {
 			// prepare sql and bind parameters
 			
-			$stmt = $conn->prepare("DELETE FROM class_timeslots WHERE classTimeslotID = :classTimeslotID");
+			$stmt = $conn->prepare("DELETE FROM class_timeslots WHERE timeslotID = :classTimeslotID");
 			$stmt->bindParam(':classTimeslotID', $classTimeslotID, PDO::PARAM_INT);
 			
 			$stmt->execute();
@@ -481,6 +540,7 @@
 			die(json_encode($arr));
 		}
 	}
+
 	
 	function getAllTrainers($conn) {
 		// GET ALL Trainers FROM THE Trainers TABLE
@@ -511,6 +571,108 @@
 			echo json_encode($arr);
 		}
 	}
+	
+	
+	function addSchedule ($conn,$trainerID,$classID,$startDate,$endDate,$timeslotData) {
+	
+//		echo "timeslot data: " . $timeslotData;
+//		$myArray = explode(';', $timeslotData);
+//		print_r($myArray);
+//
+//		return;
+		
+		if($trainerID == Null) {
+			$arr = ["status" => "Error","msg" => "Class Schedule not added - Invalid blank trainerID"];
+			die(json_encode($arr));
+		}
 
+		if($classID == Null) {
+			$arr = ["status" => "Error","msg" => "Class Schedule not added - Invalid blank classID"];
+			die(json_encode($arr));
+		}
+
+		if($startDate == Null) {
+			$arr = ["status" => "Error","msg" => "Class Schedule not added - Invalid blank startDate"];
+			die(json_encode($arr));
+		}
+
+		if($endDate == Null) {
+			$arr = ["status" => "Error","msg" => "Class Schedule not added - Invalid blank endDate"];
+			die(json_encode($arr));
+		}
+
+		if($timeslotData == Null) {
+			$arr = ["status" => "Error","msg" => "Class Schedule not added - Invalid blank timeslotData"];
+			die(json_encode($arr));
+		}
+		
+		// Insert schedule row first
+
+		try {
+		
+			// prepare sql and bind parameters for the insert
+			$stmt = $conn->prepare("INSERT INTO class_schedules (classID,startDate,endDate,trainerID) VALUES (:classID , :startDate, :endDate, :trainerID)");
+			$stmt->bindParam(':classID', $classID, PDO::PARAM_INT);
+			$stmt->bindParam(':startDate', $startDate, PDO::PARAM_STR);
+			$stmt->bindParam(':endDate', $endDate, PDO::PARAM_STR);
+			$stmt->bindParam(':trainerID', $trainerID, PDO::PARAM_INT);
+			
+			$stmt->execute();
+			$count = $stmt->rowCount();
+			
+			if ($count > 0) {
+				// Return the classScheduleID just created
+				$classScheduleID = $conn->lastInsertId();
+			} else {
+				$arr = ["status" => "Error","msg" => "Class Schedule not added successfully"];
+				die(json_encode($arr));
+			}
+		} catch(PDOException $e) {
+			$arr = ["status" => "Error","msg" => "PDO exception adding class schedule: " . $e->getMessage()];
+			die(json_encode($arr));
+		}
+
+
+		// Now Insert timeslots
+
+		// get all timeslots from $timeslotData
+		$arrTimeslots = explode(';', $timeslotData);
+		$insertValues = "";
+		$row = 0;
+
+		foreach($arrTimeslots as $item) {
+			if ($row > 0) {
+				$insertValues = $insertValues . ",";
+			}						
+			
+			$insertValues = $insertValues . "(" . $classScheduleID . ",'" . $item . "')";
+			$row ++;
+		}
+		
+//		echo "insertValues: " . $insertValues;
+
+		try {
+			// prepare sql and bind parameters for the insert
+			$stmt = $conn->prepare("INSERT INTO class_timeslots (scheduleID, startTime) VALUES " . $insertValues);
+			//$stmt->bindParam(':timeslotValues', $insertValues, PDO::PARAM_STR);
+			
+			$stmt->execute();
+			$count = $stmt->rowCount();
+			
+			if ($count > 0) {
+				// Output the results as json data
+				$arr = ["status" => "OK","msg" => "Class Schedule and Timeslots added successfully","scheduleID" => $classScheduleID];
+				echo json_encode($arr);
+			} else {
+				$arr = ["status" => "Error","msg" => "Class Timeslots not added successfully"];
+				echo json_encode($arr);
+			}
+		} catch(PDOException $e) {
+			$arr = ["status" => "Error","msg" => "PDO exception adding class timeslots: " . $e->getMessage()];
+			die(json_encode($arr));
+		}
+		
+	}
+	
 
 ?>

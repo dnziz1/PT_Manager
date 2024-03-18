@@ -11,13 +11,13 @@ android:orientation="vertical">
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:id="@+id/classSchedulesLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_margin="30dp">
 
         <TextView
-            android:id="@+id/classSchedulesTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -26,92 +26,13 @@ android:orientation="vertical">
             android:textSize="20dp"
             android:textStyle="bold"></TextView>
         <TextView
-            android:id="@+id/classSchedulesDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="Allows you to view your class schedules with an option to cancel or create a new one"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Class Name"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:id="@+id/classSchedulesName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="Class Name"
-            android:inputType="textAutoComplete"
-            android:singleLine="true"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Class Duration (minutes)"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:id="@+id/classSchedulesDuration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="No. of minutes that the class lasts"
-            android:inputType="textAutoComplete"
-            android:digits="0123456789"
-            android:singleLine="true"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Notes"
-            android:textSize="20dp">
-        </TextView>
-        <TextView
-            android:id="@+id/classSchedulesNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:hint="What is the class about?"
-            android:inputType="textAutoComplete"
-            android:singleLine="false"
-            android:textSize="20dp">
-        </TextView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/classSchedulesCancelBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:background="?attr/colorPrimary"
-                android:text="CANCEL"
-                android:textColor="#FFF"
-                android:textSize="18dp" />
-
-            <Button
-                android:id="@+id/classScheduleBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="?attr/colorPrimary"
-                android:text="CREATE"
-                android:textColor="#FFF"
-                android:textSize="18dp" />
-        </LinearLayout>
-
+            android:layout_marginBottom="10dp"
+            android:text="Allows you to view a list of your scheduled class timeslots with an option to cancel any"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            ></TextView>
     </LinearLayout>
 </ScrollView>
 </LinearLayout>
