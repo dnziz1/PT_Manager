@@ -44,7 +44,7 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
     boolean bolCreateMode;
 
     int workoutID,userID;
-    String workoutName,workoutMuscleGroup,workoutLevel,workoutEquipment,eventNotes;
+    String workoutName,workoutMuscleGroup,workoutLevel,workoutEquipment,eventNotes,accountType;
 
 
     @Override
@@ -57,6 +57,8 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
         // Store passed in variables
         Intent intent = getIntent();
         passedMode = intent.getStringExtra("MODE");
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
         passedProgID = intent.getIntExtra("PROGID",0);
         passedProgName = intent.getStringExtra("PROGNAME");
         passedProgDuration = intent.getIntExtra("DURATION",0);
@@ -77,18 +79,7 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
         deleteBtn = findViewById(R.id.progEventDelete);
         saveBtn = findViewById(R.id.progEventSave);
 
-
-        // TO DO - GET SHARED PREFERENCE - USERID AND WHETHER A TRAINER
-        // **************************************
-        // **************************************
-        // **************************************
-        // **************************************
-        // FOR NOW SET USERID = 99999, TRAINER = YES
-        userID = 99999;
-
-        // AND UNCOMMENT FOLLOWING LINES
-
-        if (!(passedTrainerID == userID)) {
+        if (!(passedTrainerID == userID && accountType.equals("TRAINER"))) {
             //spWorkoutTypes.setEnabled(false);
             spWorkoutTypes.setFocusable(false);
             spWorkoutTypes.setActivated(false);
@@ -118,14 +109,7 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
         spWorkoutTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int pos = spWorkoutTypes.getSelectedItemPosition();
 
-                String workoutTypeID = ((TextView)view.findViewById(R.id.rProgEventWorkoutID)).getText().toString();
-                String workoutName = ((TextView)view.findViewById(R.id.rProgEventWorkoutName)).getText().toString();
-
-                Toast.makeText(getApplicationContext(),
-                        "WorkoutTypeID : " + workoutTypeID +"\n"
-                                +"Name : " + workoutName +"\n", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -203,11 +187,6 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
             @Override
             public void onClick(View view) {
 
-
-                //progID = passedProgID;
-                //workoutID = tvWorkoutID.getText().toString();
-                //eventNotes = tvEventNotes.getText().toString();
-
                 // Ask user to confirm they wish to delete the event
                 //
                 new AlertDialog.Builder(context)
@@ -248,14 +227,10 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
             @Override
             public void onClick(View view) {
                 //close activity and return to the day planner
-/*                PreferenceManager.getDefaultSharedPreferences(context)
-                        .edit()
-                        .putBoolean("events_changed", true)
-                        .apply();
-                finish();
-*/
                 Intent i = new Intent(context, ProgramDayPlanner.class);
                 i.putExtra("MODE","EDIT");
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 i.putExtra("PROGID",passedProgID);
                 i.putExtra("PROGNAME", passedProgName);
                 i.putExtra("DURATION",passedProgDuration);
@@ -272,13 +247,10 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
     public void onBackPressed() {
         super.onBackPressed();
         //close activity and return to the day planner
-/*        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putBoolean("events_changed", true)
-                .apply();
-  */                                // OPEN EDIT Program Screen for the selected program
         Intent i = new Intent(context, ProgramDayPlanner.class);
         i.putExtra("MODE","EDIT");
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
         i.putExtra("PROGID",passedProgID);
         i.putExtra("PROGNAME", passedProgName);
         i.putExtra("DURATION",passedProgDuration);
@@ -290,15 +262,6 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
 
     public void SaveData(String ID) {
 
-        // Get selected workout type from the spinner
-        //int selectedWorkoutPos = spWorkoutTypes.getSelectedItemPosition();
-        //ProgramEventWorkoutModel mSelectedWorkout = arrWorkoutTypes.get(selectedWorkoutPos);
-        //workoutID = mSelectedWorkout.getWorkoutID();
-        //workoutName = mSelectedWorkout.getName();
-        //workoutMuscleGroup = mSelectedWorkout.getMuscleGroup();
-        //workoutLevel = mSelectedWorkout.getLevel();
-        //workoutEquipment = mSelectedWorkout.getEquipment();
-        //eventNotes = tvEventNotes.getText().toString();
         String data;
 
         if (ID.equals("DELETEEVENT")) {
@@ -322,16 +285,40 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
         //Send data to server
         serverConnection.execute(data, ID);
 
-        //finish();
     }
 
     //Get the result of async process
     public void processFinish(String result, String destination) {
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            // CONVERT RESULT STRING TO JSON ARRAY
-            JSONObject jo = null;
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
@@ -360,28 +347,50 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
 
                         if (destination.equals("spinWorkoutTypes")) {
                             // Populate the workout type spinner with the data
-                            //jaData = jo.getJSONArray("data");
-                            //PopulateWorkoutTypeSpinner(jaData);
-                            PopulateWorkoutTypeSpinner(result);
+                            jaData = jo.getJSONArray("data");
+                            PopulateWorkoutTypeSpinner(jaData);
                         } else {
                             // Reset screen as edit mode
-                            passedMode = "EDIT";
+                            if (bolCreateMode) {
+                                // retrieve newly created eventID from DB
+                                passedEventID = Integer.parseInt(jo.getString("eventID"));
+                                passedMode = "EDIT";
+                                bolCreateMode = false;
+                            }
                             passedWorkoutTypeID = workoutID;
                             passedWorkoutName = workoutName;
                             //passedWorkoutMuscleGroup = workoutMuscleGroup;
                             //passedWorkoutLevel = workoutLevel;
                             //passedWorkoutEquipment = workoutEquipment;
                             passedEventNotes = eventNotes;
-                            bolCreateMode = false;
 
                             if (destination.equals("CREATEEVENT")) {
-                                passedEventID = jo.getInt("eventID");
-
                                 new AlertDialog.Builder(context)
                                         .setTitle("Create Program Event")
                                         .setMessage("The event was created successfully")
                                         .setIcon(android.R.drawable.ic_dialog_alert)
-                                        .setPositiveButton("OK", null)
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // restart activity in edit mode
+                                                Intent i = getIntent();
+                                                i.putExtra("MODE","EDIT");
+                                                i.putExtra("userID",userID);
+                                                i.putExtra("accountType",accountType);
+                                                i.putExtra("PROGID",passedProgID);
+                                                i.putExtra("PROGNAME", passedProgName);
+                                                i.putExtra("DURATION",passedProgDuration);
+                                                i.putExtra("NOTES", passedProgNotes);
+                                                i.putExtra("DAYID",passedDayID);
+                                                i.putExtra("EVENTID",passedEventID);
+                                                i.putExtra("TRAINERID",passedTrainerID);
+                                                i.putExtra("WORKOUTID",passedWorkoutTypeID);
+                                                i.putExtra("WORKOUTNAME",passedWorkoutName);
+                                                i.putExtra("EVENTNOTES",passedEventNotes);
+                                                finish();
+                                                startActivity(i);
+                                            }
+                                        })
                                         .show();
                             } else if (destination.equals("UPDATEEVENT")) {
                                 new AlertDialog.Builder(context)
@@ -399,14 +408,10 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //close activity and return to the day planner
-/*                                                PreferenceManager.getDefaultSharedPreferences(context)
-                                                        .edit()
-                                                        .putBoolean("events_changed", true)
-                                                        .apply();
-                                                finish();
-*/
                                                 Intent i = new Intent(context, ProgramDayPlanner.class);
                                                 i.putExtra("MODE","EDIT");
+                                                i.putExtra("userID",userID);
+                                                i.putExtra("accountType",accountType);
                                                 i.putExtra("PROGID",passedProgID);
                                                 i.putExtra("PROGNAME", passedProgName);
                                                 i.putExtra("DURATION",passedProgDuration);
@@ -432,37 +437,19 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                         public void onClick(DialogInterface dialog, int which) {
                             // Do nothing
                             dialog.dismiss();
-                            //close activity and return to the day planner
-/*                            PreferenceManager.getDefaultSharedPreferences(context)
-                                    .edit()
-                                    .putBoolean("events_changed", true)
-                                    .apply();
-                            finish();
-*/
                         }
                     })
                     .show();
         }
     }
 
-    //private void PopulateWorkoutTypeSpinner (JSONArray ja) {
-    private void PopulateWorkoutTypeSpinner (String data) {
+    private void PopulateWorkoutTypeSpinner (JSONArray ja) {
         // Populate Workout type spinner with db data
 
         try {
-            JSONObject joData = new JSONObject(data);
-            JSONArray ja = joData.getJSONArray("data");
-
             arrWorkoutTypes.clear();
-
-            //arrWorkoutTypes = null;
-            //arrWorkoutTypes = new ArrayList<ProgramEventWorkoutModel>();
-            //spWorkoutTypesAdapter = new ProgramEventWorkoutAdapter(this, arrWorkoutTypes);
             spWorkoutTypesAdapter.notifyDataSetChanged(); // this will make the adapter refresh the data in the spinner
 
-
-            // add default All option
-            //arrWorkoutTypes.add(new ProgramEventWorkoutTypeModel(0,"ANY"));
             JSONObject jo;
             int workoutTypeID;
             String muscleGroup, workoutName,level,equipment;
@@ -477,18 +464,10 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                     workoutName = jo.getString("exerciseName");
                     level = jo.getString("level");
                     equipment = jo.getString("equipment");
-                    Log.d("loop i", String.valueOf(i));
-                    Log.d("workoutTypeID", String.valueOf(workoutTypeID));
-                    Log.d("muscleGroup", muscleGroup);
-                    Log.d("workoutName", workoutName);
-                    Log.d("level", level);
-                    Log.d("equipment", equipment);
                     workoutType = new ProgramEventWorkoutModel(workoutTypeID, muscleGroup, workoutName, level, equipment);
                     arrWorkoutTypes.add(workoutType);
                 }
             }
-
-            //spWorkoutTypesAdapter = new ProgramEventWorkoutAdapter(this, arrWorkoutTypes);
 
             spWorkoutTypesAdapter.notifyDataSetChanged(); // this will make the adapter refresh the data in the spinner
 
@@ -521,12 +500,6 @@ public class ProgramEventCreateEdit extends AppCompatActivity implements AsyncRe
                     public void onClick(DialogInterface dialog, int which) {
                         // Do nothing
                         dialog.dismiss();
-/*                        PreferenceManager.getDefaultSharedPreferences(context)
-                                .edit()
-                                .putBoolean("events_changed", true)
-                                .apply();
-                        finish();
-*/
                     }
                 })
                 .show();

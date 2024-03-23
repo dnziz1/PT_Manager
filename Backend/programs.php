@@ -2,6 +2,19 @@
 	//Set the content type to text/plain
 	header('Content-Type: text/plain');
 	
+	if (session_status() == PHP_SESSION_NONE) {
+		//Start session
+		session_start();
+	}
+ 
+	// Include the sessionData.php file
+	include_once 'sessionData.php';
+ 
+	//Immediately check for any existing session data
+	if (!isset($_SESSION['userId'])) {
+		echo "Session unavailable\r\n\n";
+	}
+	
 	//Database server settings	
 	include "db.php";
 
@@ -22,6 +35,16 @@
 
 	// arg1 is the identifier that determines which SQL function to run
 	switch ($arg1) {
+//		case "gsess":
+//			// get user session data
+//			if (isset($_SESSION['userId'])) {
+//				//
+//				echo "Session data retrieved successful\r\n\n";
+//				//Send session data over as JSON
+//				getSession();
+//			} else {
+//				echo "Session unavailable";
+//			}
 		case "gap":
 			getAllPrograms($conn);
 			break;

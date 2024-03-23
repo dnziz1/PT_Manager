@@ -25,11 +25,10 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
     Context context;
     Button btnDelete,btnSave,btnCancel,btnPlan;
     boolean bolCreateMode;
-    String progName,progNotes,data;
+    String progName,progNotes,data,accountType;
     int progID,progDuration;
 
     int userID;
-    boolean bolIsTrainer;
     TextView tvProgName,tvProgDuration,tvProgNotes;
 
     int passedProgID,passedProgDuration,passedTrainerID;
@@ -47,6 +46,8 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
 
         // Store passed in variables
         Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
         passedMode = intent.getStringExtra("MODE");
         passedProgID = intent.getIntExtra("PROGID",0);
         passedProgName = intent.getStringExtra("PROGNAME");
@@ -66,17 +67,8 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
             tvProgDuration.setText(String.valueOf(passedProgDuration));
             tvProgNotes.setText(passedProgNotes);
 
-            // TO DO - GET SHARED PREFERENCE - USERID AND WHETHER A TRAINER
-            // **************************************
-            // **************************************
-            // **************************************
-            // **************************************
-            // FOR NOW SET USERID = 99999, TRAINER = YES
-            userID = 99999;
-            bolIsTrainer = true;
-
             // If the trainer is not the one that created the program then set activity as view only
-            if (!(passedTrainerID == userID)) {
+            if (!(passedTrainerID == userID && accountType.equals("TRAINER"))) {
                 //tvProgName.setEnabled(false);
                 tvProgName.setFocusable(false);
                 tvProgName.setActivated(false);
@@ -113,13 +105,6 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                                 dialog.dismiss();
 
                                 SaveData("DELETEPROG");
-
-                                //close activity and return to the program list
-//                                PreferenceManager.getDefaultSharedPreferences(context)
-//                                        .edit()
-//                                        .putBoolean("program_changed", true)
-//                                        .apply();
-//                                finish();
                             }
                         })
 
@@ -137,12 +122,6 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
 
             }
         });
-
-        if (bolCreateMode) {
-            btnDelete.setEnabled(false);
-            btnDelete.setFocusable(false);
-            btnDelete.setActivated(false);
-       }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +189,8 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
 
                     Intent i = new Intent(context, ProgramDayPlanner.class);
                     i.putExtra("MODE",passedMode);
+                    i.putExtra("userID",userID);
+                    i.putExtra("accountType",accountType);
                     i.putExtra("PROGID",passedProgID);
                     i.putExtra("PROGNAME",progName);
                     i.putExtra("DURATION",progDuration);
@@ -253,16 +234,23 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
             }
         });
 
+        if (bolCreateMode) {
+            btnDelete.setEnabled(false);
+            btnDelete.setFocusable(false);
+            btnDelete.setActivated(false);
+            btnPlan.setEnabled(false);
+            btnPlan.setFocusable(false);
+            btnPlan.setActivated(false);
+        }
+
         btnCancel = findViewById(R.id.progCreateCancelBtn);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //close activity and return to the program list
-//                PreferenceManager.getDefaultSharedPreferences(context)
-//                        .edit()
-//                        .putBoolean("program_changed", true)
-//                        .apply();
                 Intent i = new Intent(context, ProgramList.class);
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 startActivity(i);
                 finish();
             }
@@ -273,11 +261,9 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
     public void onBackPressed() {
         super.onBackPressed();
         //close activity and return to the day planner
-//        PreferenceManager.getDefaultSharedPreferences(context)
-//                .edit()
-//                .putBoolean("program_changed", true)
-//                .apply();
         Intent i = new Intent(context, ProgramList.class);
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
         startActivity(i);
         finish();
     }
@@ -285,10 +271,35 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
     //Get the result of async process
     public void processFinish(String result, String destination){
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
         // CONVERT RESULT STRING TO JSON ARRAY
         JSONObject jo = null;
         try {
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -321,6 +332,7 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                             // retrieve newly created programID from DB
                             passedProgID = Integer.parseInt(jo.getString("programID"));
                             progID = passedProgID;
+                            passedTrainerID = userID;
                             passedMode = "EDIT";
                             bolCreateMode = false;
                         }
@@ -338,11 +350,9 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //close activity and return to the program list activity
-//                                            PreferenceManager.getDefaultSharedPreferences(context)
-//                                                    .edit()
-//                                                    .putBoolean("program_changed", true)
-//                                                    .apply();
                                             Intent i = new Intent(context, ProgramList.class);
+                                            i.putExtra("userID",userID);
+                                            i.putExtra("accountType",accountType);
                                             startActivity(i);
                                             finish();
                                         }
@@ -360,6 +370,8 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                             // program created/updated successfully do now open the day planner activity
                             Intent i = new Intent(context, ProgramDayPlanner.class);
                             i.putExtra("MODE",passedMode);
+                            i.putExtra("userID",userID);
+                            i.putExtra("accountType",accountType);
                             i.putExtra("PROGID",passedProgID);
                             i.putExtra("PROGNAME",progName);
                             i.putExtra("DURATION",progDuration);
@@ -372,7 +384,23 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
                                 .setTitle("Create Program")
                                 .setMessage("The program was created successfully")
                                 .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setPositiveButton("OK", null)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // restart activity in edit mode
+                                        Intent i = getIntent();
+                                        i.putExtra("MODE",passedMode);
+                                        i.putExtra("userID",userID);
+                                        i.putExtra("accountType",accountType);
+                                        i.putExtra("PROGID",passedProgID);
+                                        i.putExtra("PROGNAME",progName);
+                                        i.putExtra("DURATION",progDuration);
+                                        i.putExtra("NOTES",progNotes);
+                                        i.putExtra("TRAINERID",passedTrainerID);
+                                        finish();
+                                        startActivity(i);
+                                    }
+                                })
                                 .show();
                         }
                     }
@@ -396,7 +424,7 @@ public class ProgramCreateEdit extends AppCompatActivity implements AsyncRespons
         } else {
             if (bolCreateMode) {
                 // Create program
-                data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes;
+                data = "programs.php?arg1=ip&arg2=" + progName + "&arg3=" + progDuration + "&arg4=" + progNotes + "&arg5=" + userID;
             } else {
                 // Update program. Also remove events for days greater than the duration
                 data = "programs.php?arg1=upae&arg2=" + passedProgID + "&arg3=" + progName + "&arg4=" + progDuration + "&arg5=" + progNotes;

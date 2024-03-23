@@ -61,42 +61,63 @@ public class TrainerLogin extends AppCompatActivity implements AsyncResponse {
         username = usernameInput.getText().toString();
         password = passwordInput.getText().toString();
 
-        //Get input values for username and password
-        try {
-            //Hash password using MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(password.getBytes());
-            byte[] bytes = md.digest();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++) {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+//        // KEV TEST
+//        if (username.equals("admin") && password.equals("12345")) {
+//            Intent intent = new Intent(this, HomePage.class);
+//            intent.putExtra("userID", username);
+//            intent.putExtra("accountType", "CLIENT");
+//            startActivity(intent);
+//        } else {
+            //Get input values for username and password
+            try {
+                //Hash password using MD5
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                md.update(password.getBytes());
+                byte[] bytes = md.digest();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < bytes.length; i++) {
+                    sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                }
+                String generatedPassword = sb.toString();
+
+                //HTML encode username and password to handle special characters
+                username = URLEncoder.encode(username, "UTF-8");
+                password = URLEncoder.encode(generatedPassword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
             }
-            String generatedPassword = sb.toString();
 
-            //HTML encode username and password to handle special characters
-            username = URLEncoder.encode(username, "UTF-8");
-            password = URLEncoder.encode(generatedPassword, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-
-        //Create new backend connection
-        ServerConnection serverConnection = new ServerConnection();
-        //Setup response value
-        serverConnection.delegate = this;
-        //Form parameters into a string
-        data = "login.php?accountType=trainerlogin&user=" + username + "&pass=" + password;
-        serverConnection.execute(data,"");
+            //Create new backend connection
+            ServerConnection serverConnection = new ServerConnection();
+            //Setup response value
+            serverConnection.delegate = this;
+            //Form parameters into a string
+            data = "login.php?accountType=trainerlogin&user=" + username + "&pass=" + password;
+            serverConnection.execute(data, "");
+  //      }
     }
 
     //Get the result of async process
     public void processFinish(String result, String destination){
         //Check if login is successful
         if (result != null && result.contains("Login successful")){
+            // Get userid
+            int userID = 0;
+            String lines[] = result.split("\\r?\\n");
+
+            try {
+                JSONObject jo = new JSONObject(lines[4]);
+                userID = jo.getInt("userId");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
             //Change activity
             Intent intent = new Intent (this, HomePage.class);
+            intent.putExtra("userID",userID);
+            intent.putExtra("accountType","TRAINER");
             startActivity(intent);
 
         //Reset the password input if incorrect
