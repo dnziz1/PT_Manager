@@ -2,6 +2,21 @@
 	//Set the content type to text/plain
 	header('Content-Type: text/plain');
 	
+	if (session_status() == PHP_SESSION_NONE) {
+		//Start session
+		session_start();
+	}
+ 
+	// Include the sessionData.php file
+	include_once 'sessionData.php';
+ 
+	//Immediately check for any existing session data
+	if (isset($_SESSION['userId'])) {
+		echo "Login successful\r\n\n";
+	} else {
+		echo "Session unavailable\r\n\n";
+	}
+
 	//Database server settings	
 	include "db.php";
 	
@@ -114,7 +129,8 @@
 		//$sql = "SELECT * FROM classes ";
 		// only retrieve classes that have a future bookable timeslot
 		//$sql = "SELECT c.classID,c.name,c.duration,c.maxOccupancy,c.notes,ts.trainerID,CONCAT(t.firstName, t.lastName) AS 'trainer_name' FROM classes c INNER JOIN class_timeslots ts ON ts.classID = c.classID INNER JOIN trainers t ON ts.trainerID = t.tId WHERE ts.timestamp > now() GROUP BY c.classID,c.name,c.duration,c.maxOccupancy,c.notes,ts.trainerID,CONCAT(t.firstName, t.lastName) ";
-		$sql = "SELECT c.classID,c.name,c.duration,c.maxOccupancy,c.notes,cs.trainerID,CONCAT(t.firstName, t.lastName) AS 'trainer_name' FROM classes c INNER JOIN class_schedules cs ON cs.classID = c.classID INNER JOIN class_timeslots ts ON cs.scheduleID = ts.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId ";		
+		//$sql = "SELECT c.classID,c.name,c.duration,c.maxOccupancy,c.notes,cs.trainerID,CONCAT(t.firstName, t.lastName) AS 'trainer_name' FROM classes c INNER JOIN class_schedules cs ON cs.classID = c.classID INNER JOIN class_timeslots ts ON cs.scheduleID = ts.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId ";		
+		$sql = "SELECT c.classID,c.name,c.duration,c.maxOccupancy,c.notes,cs.trainerID,CONCAT(t.firstName, t.lastName) AS 'trainer_name' FROM classes c INNER JOIN class_schedules cs ON cs.classID = c.classID INNER JOIN class_timeslots ts ON cs.scheduleID = ts.scheduleID INNER JOIN trainers t ON cs.trainerID = t.trainerID ";		
 		$keyword = "WHERE";
 				
 		// check if program name filter criteria is passed in criteria 
@@ -260,7 +276,8 @@
 		try {
 			// prepare sql and bind parameters
 //			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN classes c ON ts.classID = c.classID WHERE cb.clientID = :clientID");
-			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId WHERE cb.clientID = :clientID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+//			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId WHERE cb.clientID = :clientID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+			$stmt = $conn->prepare("SELECT * FROM class_bookings cb INNER JOIN class_timeslots ts ON cb.timeslotID = ts.timeslotID INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.trainerID WHERE cb.clientID = :clientID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
 			$stmt->bindParam(':clientID', $clientID, PDO::PARAM_INT);
 
 			$stmt->execute();
@@ -393,7 +410,8 @@
 
 		try {
 			// prepare sql and bind parameters
-			$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',t.*,ts.* FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId WHERE cs.trainerID = :trainerID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+			//$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',t.*,ts.* FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId WHERE cs.trainerID = :trainerID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
+			$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',t.*,ts.* FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.trainerID WHERE cs.trainerID = :trainerID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
 			$stmt->bindParam(':trainerID', $trainerID, PDO::PARAM_INT);
 			$stmt->execute();
 		} catch(PDOException $e) {
@@ -437,7 +455,8 @@
 			//$stmt = $conn->prepare("SELECT * FROM class_timeslots ts INNER JOIN classes c ON ts.classID = c.classID INNER JOIN (SELECT ts.timeslotID, COUNT(*) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID GROUP BY ts.timeslotID) bc ON ts.timeslotID = bc.timeslotID WHERE ts.classID= :classID");
 			//$stmt = $conn->prepare("SELECT * FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId INNER JOIN (SELECT ts.timeslotID, COUNT(*) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID GROUP BY ts.timeslotID) cb ON ts.timeslotID = cb.timeslotID WHERE ts.classID= :classID" WHERE cs.classID = :c1assID AND cs.trainerID = :trainerID  AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
 			//$stmt = $conn->prepare("SELECT cs.*,ts.*,t.*,IFNULL(cb.BookedCount,0) AS 'BookedCount' FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN trainers t ON cs.trainerID = t.tId LEFT JOIN (SELECT timeslotID, COUNT(*) AS 'BookedCount' FROM class_bookings GROUP BY timeslotID) cb ON ts.timeslotID = cb.timeslotID WHERE cs.classID = :classID AND cs.trainerID = :trainerID AND cs.startDate > now() ORDER BY cs.startDate,ts.startTime");
-			$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',ts.*, COUNT(cb.timeslotID) AS Total FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId LEFT JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID WHERE cs.classID = :classID AND cs.trainerID = :trainerID AND cs.startDate > now() GROUP BY ts.timeslotID HAVING COUNT(cb.timeslotID) < c.maxOccupancy ORDER BY cs.startDate,ts.startTime");
+			//$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',ts.*, COUNT(cb.timeslotID) AS Total FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.tId LEFT JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID WHERE cs.classID = :classID AND cs.trainerID = :trainerID AND cs.startDate > now() GROUP BY ts.timeslotID HAVING COUNT(cb.timeslotID) < c.maxOccupancy ORDER BY cs.startDate,ts.startTime");
+			$stmt = $conn->prepare("SELECT cs.*,c.*,CONCAT(t.firstName, t.lastName) AS 'trainer_name',ts.*, COUNT(cb.timeslotID) AS Total FROM class_timeslots ts INNER JOIN class_schedules cs ON ts.scheduleID = cs.scheduleID INNER JOIN classes c ON cs.classID = c.classID INNER JOIN trainers t ON cs.trainerID = t.trainerID LEFT JOIN class_bookings cb ON ts.timeslotID = cb.timeslotID WHERE cs.classID = :classID AND cs.trainerID = :trainerID AND cs.startDate > now() GROUP BY ts.timeslotID HAVING COUNT(cb.timeslotID) < c.maxOccupancy ORDER BY cs.startDate,ts.startTime");
 			$stmt->bindParam(':classID', $classID, PDO::PARAM_INT);
 			$stmt->bindParam(':trainerID', $trainerID, PDO::PARAM_INT);
 			$stmt->execute();
@@ -575,12 +594,6 @@
 	
 	function addSchedule ($conn,$trainerID,$classID,$startDate,$endDate,$timeslotData) {
 	
-//		echo "timeslot data: " . $timeslotData;
-//		$myArray = explode(';', $timeslotData);
-//		print_r($myArray);
-//
-//		return;
-		
 		if($trainerID == Null) {
 			$arr = ["status" => "Error","msg" => "Class Schedule not added - Invalid blank trainerID"];
 			die(json_encode($arr));
@@ -649,8 +662,6 @@
 			$row ++;
 		}
 		
-//		echo "insertValues: " . $insertValues;
-
 		try {
 			// prepare sql and bind parameters for the insert
 			$stmt = $conn->prepare("INSERT INTO class_timeslots (scheduleID, startTime) VALUES " . $insertValues);

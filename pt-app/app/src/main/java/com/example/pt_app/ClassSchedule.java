@@ -47,7 +47,7 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
     CheckBox cbMon,cbTue,cbWed,cbThu,cbFri,cbSat,cbSun;
     EditText etvMonTime,etvTueTime,etvWedTime,etvThuTime,etvFriTime,etvSatTime,etvSunTime;
     int userID,classID,spClassesPos;
-    String userType;
+    String accountType;
     Boolean isClassOnMon=false,isClassOnTue=false,isClassOnWed=false,isClassOnThu=false,isClassOnFri=false,isClassOnSat=false,isClassOnSun=false;
     AsyncResponse asyncResponse;
     Context context;
@@ -58,9 +58,14 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
         asyncResponse = this;
         context = this;
 
-        // TO DO: GET USERID AND ACCOUNT TYPE FROM SHARED PREFERENCES
-        userID = 99999;
-        userType = "TRAINER";
+        // Get userid and account type and set screen accordingly
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
+
+//        // TEST
+//        userID = 99999;
+//        userType = "TRAINER";
 
         spClasses = findViewById(R.id.classSchedClassID);
         cbMon = findViewById(R.id.classSchedMon);
@@ -323,9 +328,6 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                 if (cbSat.isChecked()) {isClassOnSat = true;}
                 if (cbSun.isChecked()) {isClassOnSun = true;}
 
-
-//                JSONArray ja = new JSONArray();
-//                JSONObject jo = new JSONObject();
                 String timeslots="";
                 int timeslotCount=0;
                 String startDate = etvStartDate.getText().toString();
@@ -379,9 +381,6 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                             if (isDateToBeScheduled) {
                                 outDate = sdfDB.format(curDate) + " " + outTime;
 
-//                                // add to JsonArray containing all the schedule dates and times to be added to the database
-//                                jo.put("classDateTime", outDate);
-//                                ja.put(jo);
                                 // build a semicolon separated list of timeslots
                                 if (timeslotCount>0) {
                                     timeslots += ";";
@@ -400,12 +399,8 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                     }
 
                     // Add all the dates and times to the database
- //                   if(!(ja == null)) {
-//                        String encodeParams = null;
-//                        encodeParams = "arg1=as&arg2=" + userID + "&arg3=" + classID + "&arg4=" + startDate + "&arg5=" + endDate + "&arg6=" + ja.toString();
                     if (!timeslots.equals("")) {
                         String data = "classes.php?arg1=as&arg2=" + userID + "&arg3=" + classID + "&arg4=" + sdfDB.format(dtStartDate) + "&arg5=" + sdfDB.format(dtEndDate) + "&arg6=" + timeslots;
-//                        String data = "classes.php?" + encodeParams;
                         //Create new database connection
                         ServerConnection serverConnection = new ServerConnection();
                         //Setup response value
@@ -422,6 +417,8 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(context, Classes.class);
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 startActivity(i);
                 finish();
             }
@@ -432,10 +429,35 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
     //Get the result of async process
     public void processFinish(String result, String destination) {
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
@@ -462,12 +484,14 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent i = new Intent(context, Classes.class);
+                                        i.putExtra("userID", userID);
+                                        i.putExtra("accountType", accountType);
                                         startActivity(i);
                                         finish();
                                     }
                                 })
                                 .show();
-                    } else if(destination.equals("spinClass")) {
+                    } else if (destination.equals("spinClass")) {
                         if (jo.getString("status").equals("OK")) {
                             jaData = jo.getJSONArray("data");
                             bookingsFound = jaData.length();
@@ -477,7 +501,7 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                     }
                 }
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             new AlertDialog.Builder(context)
                     .setTitle("Class Schedule - Serious Error")
                     .setMessage(e.getMessage())
@@ -485,6 +509,7 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
                     .setPositiveButton("OK", null)
                     .show();
         }
+//    }
     }
     @Override
     public void onBackPressed() {
@@ -492,6 +517,8 @@ public class ClassSchedule extends AppCompatActivity implements AsyncResponse {
         //close activity and return to the Class info activity
         finish();
         Intent i = new Intent(context, Classes.class);
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
         startActivity(i);
     }
 

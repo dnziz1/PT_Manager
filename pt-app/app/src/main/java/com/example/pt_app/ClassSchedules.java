@@ -21,7 +21,7 @@ import java.util.Date;
 
 public class ClassSchedules extends AppCompatActivity  implements AsyncResponse {
     int userID, classTimeslotID, classID,classTrainerID;
-    String className, classTrainerName, classDateTime;
+    String className, classTrainerName, classDateTime,accountType;
 
     AsyncResponse asyncResponse;
     Context context;
@@ -34,9 +34,13 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
         asyncResponse = this;
         context = this;
 
-        // TO DO CHECK SESSION DATA AND GET userID
+        // Get userid and account type and set screen accordingly
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
 
-        userID = 99999;
+//        // TEST
+//        userID = 99999;
 
         // SHOW all current classes for the logged in user
         String data = "classes.php?arg1=gtt&arg2=" + userID;
@@ -51,20 +55,45 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
     }
 
     //Get the result of async process
-    public void processFinish(String result, String destination){
+    public void processFinish(String result, String destination) {
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            String errTitle="";
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
+
+            String errTitle = "";
 
             if (destination.equals("LISTSCHEDULES")) {
                 errTitle = "Error Retrieving Trainer Class Schedules";
             } else if (destination.equals("DELETESCHEDULE")) {
                 errTitle = "Error Deleting Schedule";
             }
-
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
@@ -85,12 +114,18 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
                                 .setTitle("Cancel Class Schedule")
                                 .setMessage("The schedule was cancelled successfully")
                                 .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setPositiveButton("OK", null)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // restart activity to refresh the schedules list
+                                        finish();
+                                        Intent i = new Intent(context, ClassSchedules.class);
+                                        i.putExtra("userID", userID);
+                                        i.putExtra("accountType", accountType);
+                                        startActivity(i);
+                                    }
+                                })
                                 .show();
-                        // restart activity to refresh the booking list
-                        finish();
-                        Intent i = new Intent(context,ClassSchedules.class);
-                        startActivity (i);
                     } else if (destination.equals("LISTSCHEDULES")) {
                         if (jo.getString("status").equals("OK")) {
                             jaData = jo.getJSONArray("data");
@@ -105,19 +140,16 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
                                 SimpleDateFormat curFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date dateObj = curFormat.parse(dateStr);
                                 SimpleDateFormat newFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                                classDateTime =  newFormat.format(dateObj);
+                                classDateTime = newFormat.format(dateObj);
                                 classID = joData.getInt("classID");
                                 className = joData.getString("name");
                                 classTrainerID = joData.getInt("trainerID");
                                 classTrainerName = joData.getString("displayName");
 
                                 // create header row
-                                //***************************************TO DO
+                                // TO DO
 
-
-
-
-                                // set layout for booked class rows
+                                // set layout for the scheduled class timeslot rows
                                 LinearLayout LLC = new LinearLayout(this);
                                 LLC.setOrientation(LinearLayout.HORIZONTAL);
                                 LinearLayout.LayoutParams paramsC = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -128,8 +160,8 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
                                 LinearLayout layoutC;
 
                                 // CREATE DYNAMIC CLASS ROWS WITH CANCEL BUTTON
-                                // ******* PLACE class and CANCEL button on same line
-                                // clicking Cancel button opens a confirmation dialog and then removes the user from the class enrolment table
+                                // PLACE class and CANCEL button on same line
+                                // clicking Cancel button opens a confirmation dialog and then removes the scheduled timeslot and any booked users
                                 rowTextView.setText(classDateTime + " : " + className);
                                 rowTextView.setTag(classTimeslotID);
 
@@ -197,6 +229,7 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
                     .setPositiveButton("OK", null)
                     .show();
         }
+//    }
     }
     @Override
     public void onBackPressed() {
@@ -204,6 +237,8 @@ public class ClassSchedules extends AppCompatActivity  implements AsyncResponse 
         //close activity and return to the Classes activity
         finish();
         Intent i = new Intent(context,Classes.class);
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
         startActivity (i);
     }
 

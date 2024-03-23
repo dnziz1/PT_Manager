@@ -25,7 +25,7 @@ import java.util.Date;
 
 public class ClassBook extends AppCompatActivity implements AsyncResponse {
     int userID,passedClassID,passedDuration,passedTrainerID,timeslotID,spTimeslotsPos;
-    String userType,passedClassName,passedClassNotes,passedTrainerName;
+    String accountType,passedClassName,passedClassNotes,passedTrainerName;
     Spinner spTimeslots;
     ArrayList<ClassBookTimeslotModel> arrTimeslots;
     ClassBookTimeslotAdapter spTimeslotsAdapter ;
@@ -39,12 +39,16 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
         asyncResponse = this;
         context = this;
 
-        // TO DO: GET USERID AND ACCOUNT TYPE FROM SHARED PREFERENCES
-        userID = 99999;
-        userType = "TRAINER";
+        // Get userid and account type and set screen accordingly
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
+
+//        // TEST
+//        userID = 99999;
+//        userType = "TRAINER";
 
         // Store passed in variables
-        Intent intent = getIntent();
         passedClassID = intent.getIntExtra("CLASSID",0);
         passedClassName = intent.getStringExtra("CLASSNAME");
         passedDuration = intent.getIntExtra("DURATION",0);
@@ -60,6 +64,8 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
             public void onClick(View view) {
                 //close activity and return to the Class info activity
                 Intent i = new Intent(context,ClassInfo.class);
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 i.putExtra("CLASSID",passedClassID);
                 i.putExtra("CLASSNAME",passedClassName);
                 i.putExtra("DURATION",passedDuration);
@@ -163,10 +169,35 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
     //Get the result of async process
     public void processFinish(String result, String destination) {
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
@@ -200,12 +231,16 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
                                     public void onClick(DialogInterface dialog, int which) {
                                         //restart the ClassBook activity to update the available timeslots
                                         Intent i = new Intent(context, ClassBook.class);
-                                        i.putExtra("CLASSID",passedClassID);
-                                        i.putExtra("CLASSNAME",passedClassName);
-                                        i.putExtra("DURATION",passedDuration);
-                                        i.putExtra("NOTES",passedClassNotes);
-                                        i.putExtra("TRAINERID",passedTrainerID);
-                                        i.putExtra("TRAINERNAME",passedTrainerName);
+                                        // Get userid and account type and set screen accordingly
+                                        Intent intent = getIntent();
+                                        i.putExtra("userID", userID);
+                                        i.putExtra("accountType", accountType);
+                                        i.putExtra("CLASSID", passedClassID);
+                                        i.putExtra("CLASSNAME", passedClassName);
+                                        i.putExtra("DURATION", passedDuration);
+                                        i.putExtra("NOTES", passedClassNotes);
+                                        i.putExtra("TRAINERID", passedTrainerID);
+                                        i.putExtra("TRAINERNAME", passedTrainerName);
                                         startActivity(i);
                                         finish();
                                     }
@@ -216,7 +251,7 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
 
                 }
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             new AlertDialog.Builder(context)
                     .setTitle("Class Book - Serious Error")
                     .setMessage(e.getMessage())
@@ -224,6 +259,7 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
                     .setPositiveButton("OK", null)
                     .show();
         }
+//    }
     }
 
 
@@ -259,6 +295,8 @@ public class ClassBook extends AppCompatActivity implements AsyncResponse {
         super.onBackPressed();
         //close activity and return to the Class info activity
         Intent i = new Intent(context,ClassInfo.class);
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
         i.putExtra("CLASSID",passedClassID);
         i.putExtra("CLASSNAME",passedClassName);
         i.putExtra("DURATION",passedDuration);

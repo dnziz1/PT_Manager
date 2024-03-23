@@ -183,7 +183,6 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         } else {
 */
             // CONVERT RESULT STRING TO JSON ARRAY
-            JSONArray ja = null;
             JSONObject jo = null;
             try {
                 // Get the data which is on line 3 after the session data message

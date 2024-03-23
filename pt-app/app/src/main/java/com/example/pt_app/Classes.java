@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 
 public class Classes extends AppCompatActivity implements AsyncResponse {
     int userID;
-    String userType;
+    String accountType;
     ArrayList<ClassesTrainerModel> arrTrainers;
     ListView lvClasses;
     Spinner spTrainers;
@@ -42,25 +43,31 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
         asyncResponse = this;
         context = this;
 
-        // TO DO: GET USERID AND ACCOUNT TYPE FROM SHARED PREFERENCES
-        userID = 99999;
-        userType = "TRAINER";
+        // Get userid and account type and set screen accordingly
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
+
+//        // TEST
+//        userID = 99999;
+//        accountType = "TRAINER";
 
         // If user is a client then disable Schedules button
         // If user is a trainer then disable Bookings button
         btnBookings = findViewById(R.id.classesBookingsBtn);
         btnSchedules = findViewById(R.id.classesSchedulesBtn);
-        tvNameSearch = findViewById(R.id.classesNameSearch);
-        tvMinDuration = findViewById(R.id.classesMinDuration);
-        tvMaxDuration = findViewById(R.id.classesMaxDuration);
 
-        if (userType.equals("CLIENT")) {
+        if (accountType.equals("CLIENT")) {
             btnBookings.setEnabled(true);
             btnSchedules.setEnabled(false);
         } else {
             btnBookings.setEnabled(false);
             btnSchedules.setEnabled(true);
         }
+
+        tvNameSearch = findViewById(R.id.classesNameSearch);
+        tvMinDuration = findViewById(R.id.classesMinDuration);
+        tvMaxDuration = findViewById(R.id.classesMaxDuration);
 
         btnUpdateSearch = findViewById(R.id.classesSearchBtn);
         btnUpdateSearch.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +84,10 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
 
                 // Open the Class Create activity
                 Intent i = new Intent(context, ClassSchedule.class);
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -88,7 +98,10 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
 
                 // Open the Class Create activity
                 Intent i = new Intent(context, ClassBookings.class);
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -99,7 +112,10 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
 
                 // Open the Class Create activity
                 Intent i = new Intent(context, ClassSchedules.class);
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -112,11 +128,6 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                // TODO Auto-generated method stub
-                //int pos = spTrainers.getSelectedItemPosition();
-
-                //String trainerID = ((TextView)view.findViewById(R.id.rClassesTrainerID)).getText().toString();
-                //String trainerName = ((TextView)view.findViewById(R.id.rClassesTrainerName)).getText().toString();
 
             }
 
@@ -154,14 +165,11 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                 int trainerID = Integer.parseInt(((TextView)view.findViewById(R.id.rClassesLVTrainerID)).getText().toString());
                 String trainerName = ((TextView)view.findViewById(R.id.rClassesLVTrainerName)).getText().toString();
 
-                //Toast.makeText(getApplicationContext(),
-                //        "ClassID : " + classID +"\n"
-                //                +"Name : " + name +"\n"
-                //                +"Duration : " + duration +"\n", Toast.LENGTH_SHORT).show();
-
                 // OPEN EDIT Class create/edit Screen for the selected program
                 Intent i = new Intent(context, ClassInfo.class);
                 i.putExtra("MODE","EDIT");
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 i.putExtra("CLASSID",classID);
                 i.putExtra("CLASSNAME",name);
                 i.putExtra("DURATION",duration);
@@ -169,6 +177,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                 i.putExtra("TRAINERID",trainerID);
                 i.putExtra("TRAINERNAME",trainerName);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -179,10 +188,35 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
     //Get the result of async process
     public void processFinish(String result, String destination) {
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
@@ -219,6 +253,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
                     .setPositiveButton("OK", null)
                     .show();
         }
+//    }
 
     }
 
@@ -233,9 +268,8 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             for (int i = 0; i < ja.length(); i++) {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
-                    int testtid = Integer.parseInt(jo.getString("tId"));
-                    String testName = jo.getString("displayName");
-                    ClassesTrainerModel trainer = new ClassesTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
+                    //ClassesTrainerModel trainer = new ClassesTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
+                    ClassesTrainerModel trainer = new ClassesTrainerModel(Integer.parseInt(jo.getString("trainerID")), jo.getString("displayName"));
                     arrTrainers.add(trainer);
                 } catch (JSONException ex) {
                     throw new RuntimeException(ex);
@@ -291,7 +325,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //close activity and return to the Classes activity
+        //close activity and return to the HomePage activity
         finish();
     }
 

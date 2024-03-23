@@ -11,12 +11,20 @@
 	include_once 'sessionData.php';
  
 	//Immediately check for any existing session data
-	if (!isset($_SESSION['userId'])) {
+	if (isset($_SESSION['userId'])) {
+		echo "Login successful\r\n\n";
+	} else {
 		echo "Session unavailable\r\n\n";
 	}
 	
 	//Database server settings	
 	include "db.php";
+
+	if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+     		// Refuse any request method other than GET as the android app currently only uses GET by default for all database queries
+		$arr = ["status" => "Error","msg" => "Invalid DB request mode: " . $_SERVER['REQUEST_METHOD']];
+		die(json_encode($arr));
+	}
 
 	// initialise argument fields
 	$arg1 = $arg2 = $arg3 = $arg4 = $arg5 = $arg6 = $arg7 = $arg8 = $arg9 = $arg10 = NULL;
