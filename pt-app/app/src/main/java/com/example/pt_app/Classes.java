@@ -56,13 +56,16 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
         // If user is a trainer then disable Bookings button
         btnBookings = findViewById(R.id.classesBookingsBtn);
         btnSchedules = findViewById(R.id.classesSchedulesBtn);
+        btnCreateClassSchedule = findViewById(R.id.classesCreateBtn);
 
         if (accountType.equals("CLIENT")) {
             btnBookings.setEnabled(true);
             btnSchedules.setEnabled(false);
+            btnCreateClassSchedule.setEnabled(false);
         } else {
             btnBookings.setEnabled(false);
             btnSchedules.setEnabled(true);
+            btnCreateClassSchedule.setEnabled(true);
         }
 
         tvNameSearch = findViewById(R.id.classesNameSearch);
@@ -77,7 +80,6 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             }
         });
 
-        btnCreateClassSchedule = findViewById(R.id.classesCreateBtn);
         btnCreateClassSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -268,8 +270,7 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             for (int i = 0; i < ja.length(); i++) {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
-                    //ClassesTrainerModel trainer = new ClassesTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
-                    ClassesTrainerModel trainer = new ClassesTrainerModel(Integer.parseInt(jo.getString("trainerID")), jo.getString("displayName"));
+                    ClassesTrainerModel trainer = new ClassesTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
                     arrTrainers.add(trainer);
                 } catch (JSONException ex) {
                     throw new RuntimeException(ex);

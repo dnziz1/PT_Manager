@@ -43,7 +43,7 @@ if (isset($_GET['accountType'])) {
         if ($result->num_rows > 0) {
             //Retrieves ID value from the SQL result
             $row = $result->fetch_assoc();
-            $userID = $row['trainerID'];
+            $userID = $row['tId'];
             $username = $row['username'];
 
             //Saves session data with user ID and username
@@ -71,7 +71,7 @@ if (isset($_GET['accountType'])) {
         if ($result->num_rows > 0) {
             //Retrieves ID value from the SQL result
             $row = $result->fetch_assoc();
-            $userID = $row['clientID'];
+            $userID = $row['cId'];
             $username = $row['username'];
 
             //Saves session data with user ID and username

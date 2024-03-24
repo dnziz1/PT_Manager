@@ -143,7 +143,7 @@ public class ClassBookings extends AppCompatActivity implements AsyncResponse {
                                 classDateTime = newFormat.format(dateObj);
                                 classID = joData.getInt("classID");
                                 className = joData.getString("name");
-                                classTrainerID = joData.getInt("trainerID");
+                                classTrainerID = joData.getInt("tId");
                                 classTrainerName = joData.getString("displayName");
 
                                 // create header row

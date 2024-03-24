@@ -235,8 +235,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             for (int i = 0; i < ja.length(); i++) {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
-                    //ProgramListTrainerModel trainer = new ProgramListTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
-                    ProgramListTrainerModel trainer = new ProgramListTrainerModel(Integer.parseInt(jo.getString("trainerID")), jo.getString("displayName"));
+                    ProgramListTrainerModel trainer = new ProgramListTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
                     arrTrainers.add(trainer);
                 } catch (JSONException ex) {
                     throw new RuntimeException(ex);
