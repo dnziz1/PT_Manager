@@ -36,7 +36,7 @@ if (isset($_GET['accountType'])) {
         $pass = $_GET['pass'];
         
         //Create SQL query using values
-        $sql = "SELECT * FROM trainerLoginTest WHERE username = '$user' AND password = '$pass'";
+        $sql = "SELECT * FROM trainers WHERE username = '$user' AND password = '$pass'";
         $result = $conn->query($sql);
 
         //If login exists
@@ -64,7 +64,7 @@ if (isset($_GET['accountType'])) {
         $pass = $_GET['pass'];
 
         //Create SQL query using values
-        $sql = "SELECT * FROM clientLoginTest WHERE username = '$user' AND password = '$pass'";
+        $sql = "SELECT * FROM clients WHERE username = '$user' AND password = '$pass'";
         $result = $conn->query($sql);
         
         //If login exists
