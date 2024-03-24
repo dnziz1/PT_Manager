@@ -53,11 +53,9 @@ public class ClientRegister extends AppCompatActivity implements AsyncResponse {
         String confirmPassword = confirmPasswordInput.getText().toString();
 
         if(firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
-            //Toast.makeText(getBaseContext(),"Please fill all required fields", Toast.LENGTH_LONG).show();
             errorText.setText("Please fill all required fields");
         }
         else if(!password.equals(confirmPassword)){
-            //Toast.makeText(getBaseContext(),"Passwords do not match", Toast.LENGTH_LONG).show();
             errorText.setText("Passwords do not match");
         }
         else {
@@ -110,6 +108,9 @@ public class ClientRegister extends AppCompatActivity implements AsyncResponse {
             //Change activity
             Intent intent = new Intent(this, HomePage.class);
             startActivity(intent);
+        }
+        else if(result.contains("Username already in use")){
+            errorText.setText("Username already in use");
         }
     }
 }
