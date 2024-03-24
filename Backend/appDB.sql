@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS `appDB`.`clients` (
   `firstName` VARCHAR(20) NOT NULL,
   `lastName` VARCHAR(20) NOT NULL,
   `displayName` VARCHAR(20) NULL DEFAULT NULL,
-  `DoB` DATETIME NOT NULL,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `DoB` DATE DEFAULT NULL,
   `phoneNumber` INT NULL DEFAULT NULL,
   `address` VARCHAR(45) NULL DEFAULT NULL,
   `pictureId` INT NULL DEFAULT NULL,
@@ -63,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `appDB`.`clients` (
   PRIMARY KEY (`cId`),
   UNIQUE INDEX `id_UNIQUE` (`cId` ASC) VISIBLE,
   UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
   UNIQUE INDEX `phoneNumber_UNIQUE` (`phoneNumber` ASC) VISIBLE,
   UNIQUE INDEX `pictureId_UNIQUE` (`pictureId` ASC) VISIBLE)
 ENGINE = InnoDB;
