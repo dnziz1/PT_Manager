@@ -55,6 +55,11 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         startActivity(intent);
     }
 
+    public void openClientRegister (View view){
+        Intent intent = new Intent (this, ClientRegister.class);
+        startActivity(intent);
+    }
+
     public void logIn (View view){
         //Get input values for username and password
         username = usernameInput.getText().toString();
