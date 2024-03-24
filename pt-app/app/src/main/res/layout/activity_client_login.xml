@@ -35,7 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/loginTitle" />
 
     <TextView
-        android:id="@+id/resetPassword"
+        android:id="@+id/resetPasswordText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -45,14 +45,16 @@
         app:layout_constraintTop_toBottomOf="@+id/clientPasswordInput" />
 
     <TextView
-        android:id="@+id/createNewAccount"
+        android:id="@+id/createNewAccountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="Create New Account"
+        android:onClick="openClientRegister"
+        android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resetPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/resetPasswordText" />
 
     <Button
         android:id="@+id/clientLogin"
@@ -63,7 +65,7 @@
         android:onClick="logIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createNewAccount" />
+        app:layout_constraintTop_toBottomOf="@+id/createNewAccountText" />
 
     <EditText
         android:id="@+id/clientPasswordInput"
