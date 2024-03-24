@@ -60,12 +60,13 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
         username = usernameInput.getText().toString();
         password = passwordInput.getText().toString();
 
-        // KEV TEST
-        if (username.equals("admin") && password.equals("12345")) {
-            //Intent intent = new Intent (this, ProgramList.class);
-            Intent intent = new Intent (this, HomePage.class);
-            startActivity(intent);
-        } else {
+//        // KEV TEST
+//        if (username.equals("Zadmin") && password.equals("12345")) {
+//            Intent intent = new Intent (this, HomePage.class);
+//            intent.putExtra("userID",username);
+//            intent.putExtra("accountType","CLIENT");
+//            startActivity(intent);
+//        } else {
             try {
                 //Hash password using MD5
                 MessageDigest md = MessageDigest.getInstance("MD5");
@@ -93,7 +94,7 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
             //Form parameters into a string
             data = "login.php?accountType=clientlogin&user=" + username + "&pass=" + password;
             serverConnection.execute(data,"");
-        }
+//        }
     }
 
     //Get the result of async process
@@ -102,8 +103,21 @@ public class ClientLogin extends AppCompatActivity implements AsyncResponse {
 
         //Check if login is successful
         if (result != null && result.contains("Login successful")) {
+            // Get userid
+            int userID = 0;
+            String lines[] = result.split("\\r?\\n");
+
+            try {
+                JSONObject jo = new JSONObject(lines[4]);
+                userID = jo.getInt("userId");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
             //Change activity
             Intent intent = new Intent(this, HomePage.class);
+            intent.putExtra("userID",userID);
+            intent.putExtra("accountType","CLIENT");
             startActivity(intent);
 
             //Reset the password input if incorrect

@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class HomePage extends AppCompatActivity {
 
+    int userID;
+    String accountType;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +25,9 @@ public class HomePage extends AppCompatActivity {
         ImageView programs = findViewById(R.id.programs);
         ImageView logout = findViewById(R.id.logout);
         ImageView profile = findViewById(R.id.profile);
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
 
         home.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +55,8 @@ public class HomePage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomePage.this, ProgramList.class);
+                intent.putExtra("userID",userID);
+                intent.putExtra("accountType",accountType);
                 startActivity(intent);
             }
         });
@@ -57,6 +64,8 @@ public class HomePage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomePage.this, Classes.class);
+                intent.putExtra("userID",userID);
+                intent.putExtra("accountType",accountType);
                 startActivity(intent);
             }
         });

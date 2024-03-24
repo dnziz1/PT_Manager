@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,7 +26,7 @@ import org.w3c.dom.Text;
 public class ProgramDayPlanner extends AppCompatActivity implements AsyncResponse {
 
     int passedProgID, passedProgDuration, passedTrainerID,userID;
-    String passedMode,passedProgName,passedProgNotes;
+    String passedMode,passedProgName,passedProgNotes,accountType;
     boolean bolViewOnly;
     AsyncResponse asyncResponse;
     Context context;
@@ -39,6 +40,8 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
         // Store passed in variables
         Intent intent = getIntent();
         passedMode = intent.getStringExtra("MODE");
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
         passedProgID = intent.getIntExtra("PROGID",0);
         passedProgName = intent.getStringExtra("PROGNAME");
         passedProgDuration = intent.getIntExtra("DURATION",0);
@@ -46,17 +49,7 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
         passedTrainerID = intent.getIntExtra("TRAINERID",0);
         bolViewOnly = false;
 
-        // If user isn't the creator of the program then set screen as view only
-        // ***************************************************************
-        // ***************************************************************
-        // ***************************************************************
-        // ***************************************************************
-        // ***************************************************************
-        // ***************************************************************
-        // UNCOMMENT LINE BELOW ONCE GOT SHARED PREFERENCE USERID*********
-        // Set initial default id to 99999
-        userID = 99999;
-        if (!(passedTrainerID == userID)) bolViewOnly = true;
+        if (!(passedTrainerID == userID && accountType.equals("TRAINER"))) bolViewOnly = true;
 
         // SHOW all Program Days and any events
         String data = "programs.php?arg1=gpe&arg2=" + passedProgID;
@@ -70,28 +63,38 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
 
     }
 
-/*    // Refresh activity when coming back to it to show any new events(workouts/tasks etc)
-    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (prefs.getBoolean("events_changed", false)) {
-            prefs.edit().remove("events_changed").apply();
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
-        }
-    }
-*/
     //Get the result of async process
     public void processFinish(String result, String destination){
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
@@ -154,8 +157,32 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                         //rowTextViewE.setText(eventID + " : " + workoutID + " : " + workoutName + " : "  + muscleGroup + " : "  + level + " : " + eventNotes);
                         rowTextViewE.setText(eventID + " : " + workoutID + " : " + workoutName);
                         rowTextViewE.setTag(day + ";" + eventID + ";" + workoutID + ";" + workoutName + ";" + eventNotes);
+                        rowTextViewE.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // OPEN ProgramEventCreateEdit Screen for the selected event
+                                Intent i = new Intent(context, ProgramEventCreateEdit.class);
+                                i.putExtra("MODE", "EDIT");
+                                i.putExtra("userID",userID);
+                                i.putExtra("accountType",accountType);
+                                i.putExtra("PROGID", passedProgID);
+                                i.putExtra("PROGNAME", passedProgName);
+                                i.putExtra("DURATION", passedProgDuration);
+                                i.putExtra("NOTES", passedProgNotes);
+                                String[] data = rowTextViewE.getTag().toString().split(";", -1);
+                                i.putExtra("DAYID", Integer.parseInt(data[0]));
+                                i.putExtra("EVENTID", Integer.parseInt(data[1]));
+                                i.putExtra("TRAINERID",passedTrainerID);
+                                i.putExtra("WORKOUTID", Integer.parseInt(data[2]));
+                                i.putExtra("WORKOUTNAME", data[3]);
+                                i.putExtra("EVENTNOTES", data[4]);
+                                startActivity(i);
+                                finish();
+                            }
+                        });
 
-                        Button btnEditEvent = new Button(this);
+
+/*                        Button btnEditEvent = new Button(this);
                         btnEditEvent.setText("Edit");
                         // set tags so that dayID and eventID can be passed to the event create/edit activity
                         btnEditEvent.setTag(day + ";" + eventID + ";" + workoutID + ";" + workoutName + ";" + eventNotes);
@@ -169,9 +196,11 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                         btnEditEvent.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                // OPEN EDIT Program Screen for the selected program
+                                // OPEN ProgramEventCreateEdit Screen for the selected event
                                 Intent i = new Intent(context, ProgramEventCreateEdit.class);
                                 i.putExtra("MODE", "EDIT");
+                                i.putExtra("userID",userID);
+                                i.putExtra("accountType",accountType);
                                 i.putExtra("PROGID", passedProgID);
                                 i.putExtra("PROGNAME", passedProgName);
                                 i.putExtra("DURATION", passedProgDuration);
@@ -187,10 +216,10 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                                 finish();
                             }
                         });
-
+*/
                         // add day and Add event button on the same row
                         LLE.addView(rowTextViewE);
-                        LLE.addView(btnEditEvent);
+                        //LLE.addView(btnEditEvent);
                         // add the textview to the linearlayout
                         layoutE = (LinearLayout) findViewById(R.id.programDayPlanLayout);
                         layoutE.addView(LLE);
@@ -244,6 +273,8 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
                 // OPEN EDIT Program Event Screen for the selected program
                 Intent i = new Intent(context, ProgramEventCreateEdit.class);
                 i.putExtra("MODE","CREATE");
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 i.putExtra("PROGID",passedProgID);
                 i.putExtra("PROGNAME", passedProgName);
                 i.putExtra("DURATION", passedProgDuration);
@@ -271,6 +302,8 @@ public class ProgramDayPlanner extends AppCompatActivity implements AsyncRespons
         //close activity and return to the program create/edit activity
         Intent i = new Intent(context, ProgramCreateEdit.class);
         i.putExtra("MODE",passedMode);
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
         i.putExtra("PROGID",passedProgID);
         i.putExtra("PROGNAME",passedProgName);
         i.putExtra("DURATION",passedProgDuration);

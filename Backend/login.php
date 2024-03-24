@@ -36,14 +36,14 @@ if (isset($_GET['accountType'])) {
         $pass = $_GET['pass'];
         
         //Create SQL query using values
-        $sql = "SELECT * FROM trainerLoginTest WHERE username = '$user' AND password = '$pass'";
+        $sql = "SELECT * FROM trainers WHERE username = '$user' AND password = '$pass'";
         $result = $conn->query($sql);
 
         //If login exists
         if ($result->num_rows > 0) {
             //Retrieves ID value from the SQL result
             $row = $result->fetch_assoc();
-            $userID = $row['trainerID'];
+            $userID = $row['tId'];
             $username = $row['username'];
 
             //Saves session data with user ID and username
@@ -64,14 +64,14 @@ if (isset($_GET['accountType'])) {
         $pass = $_GET['pass'];
 
         //Create SQL query using values
-        $sql = "SELECT * FROM clientLoginTest WHERE username = '$user' AND password = '$pass'";
+        $sql = "SELECT * FROM clients WHERE username = '$user' AND password = '$pass'";
         $result = $conn->query($sql);
         
         //If login exists
         if ($result->num_rows > 0) {
             //Retrieves ID value from the SQL result
             $row = $result->fetch_assoc();
-            $userID = $row['clientID'];
+            $userID = $row['cId'];
             $username = $row['username'];
 
             //Saves session data with user ID and username

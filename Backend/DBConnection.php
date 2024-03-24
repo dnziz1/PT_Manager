@@ -4,10 +4,10 @@ static $conn;
 
 function connectToDB() {
     //Change parameters to fit database settings
-    $servername = "localhost";
-    $username = "root";
-    $password = "test";
-    $dbname = "appDB";
+	$servername = "localhost:3316";
+	$username = "Kevin";
+	$password = "";
+	$dbname = "appdb";
 
     //Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);

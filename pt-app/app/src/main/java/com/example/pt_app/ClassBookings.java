@@ -2,6 +2,7 @@ package com.example.pt_app;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,8 +21,8 @@ import java.util.Date;
 
 public class ClassBookings extends AppCompatActivity implements AsyncResponse {
 
-    int userID, classTimeslotID, classID,classDuration,classTrainerID;
-    String className, classTrainerName, classDateTime;
+    int userID, classBookingID, classID,classTrainerID;
+    String className, classTrainerName, classDateTime,accountType;
 
     AsyncResponse asyncResponse;
     Context context;
@@ -33,10 +34,16 @@ public class ClassBookings extends AppCompatActivity implements AsyncResponse {
         asyncResponse = this;
         context = this;
 
-        userID = 99999;
+        // Get userid and account type and set screen accordingly
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
+
+//        // TEST
+//        userID = 99999;
 
         // SHOW all current classes for the logged in user
-        String data = "programs.php?arg1=gcc&arg2=" + userID;
+        String data = "classes.php?arg1=gcbbc&arg2=" + userID;
 
         //Create new database connection
         ServerConnection serverConnection = new ServerConnection();
@@ -48,19 +55,51 @@ public class ClassBookings extends AppCompatActivity implements AsyncResponse {
     }
 
     //Get the result of async process
-    public void processFinish(String result, String destination){
+    public void processFinish(String result, String destination) {
 
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+        // CONVERT RESULT STRING TO JSON ARRAY
+        JSONObject jo = null;
         try {
-            // CONVERT RESULT STRING TO JSON OBJECT
-            JSONObject jo = null;
-            jo = new JSONObject(result);
+            // Get the data which is on line 3 after the session data message
+            String lines[] = result.split("\\r?\\n");
+            //jo = new JSONObject(result);
+            jo = new JSONObject(lines[2]);
+
+            String errTitle = "";
+
+            if (destination.equals("LISTCLASSES")) {
+                errTitle = "Error Retrieving Class Bookings";
+            } else if (destination.equals("DELETEBOOKING")) {
+                errTitle = "Error Deleting Booking";
+            }
 
             if (jo.length() > 0) {
                 if (jo.getString("status").equals("Error")) {
                     Log.d("Error", jo.getString("msg"));
-
                     new AlertDialog.Builder(context)
-                            .setTitle("Error Retrieving Class Bookings")
+                            .setTitle(errTitle)
                             .setMessage(jo.getString("msg"))
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton("OK", null)
@@ -69,111 +108,117 @@ public class ClassBookings extends AppCompatActivity implements AsyncResponse {
                     JSONArray jaData = null;
                     int bookingsFound = 0;
 
-                    if (jo.getString("status").equals("OK")) {
-                        jaData = jo.getJSONArray("data");
-                        bookingsFound = jaData.length();
-                    }
-
                     if (destination.equals("DELETEBOOKING")) {
                         // display msg booking deleted successfully
                         new AlertDialog.Builder(context)
                                 .setTitle("Cancel Class Booking")
                                 .setMessage("The booking was cancelled successfully")
                                 .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setPositiveButton("OK", null)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // restart activity to refresh the booking list
+                                        finish();
+                                        Intent i = new Intent(context, ClassBookings.class);
+                                        i.putExtra("userID", userID);
+                                        i.putExtra("accountType", accountType);
+                                        startActivity(i);
+                                    }
+                                })
                                 .show();
-                    } else {
-                        JSONObject joData;
-                        for (int row = 0; row < bookingsFound; row++) {
+                    } else if (destination.equals("LISTCLASSES")) {
+                        if (jo.getString("status").equals("OK")) {
+                            jaData = jo.getJSONArray("data");
+                            bookingsFound = jaData.length();
 
-                            joData = jaData.getJSONObject(row);
-                            classTimeslotID = joData.getInt("timeslotID");
+                            JSONObject joData;
+                            for (int row = 0; row < bookingsFound; row++) {
 
-                            String dateStr = joData.getString("timestamp");
-                            SimpleDateFormat curFormat = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
-                            Date dateObj = curFormat.parse(dateStr);
-                            SimpleDateFormat newFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm");
-                            classDateTime =  newFormat.format(dateObj);
-                            classID = joData.getInt("classID");
-                            className = joData.getString("timestamp");
-                            classDuration = joData.getInt("timestamp");
-                            classTrainerID = joData.getInt("timestamp");
-                            classTrainerName = joData.getString("timestamp");
+                                joData = jaData.getJSONObject(row);
+                                classBookingID = joData.getInt("classBookingID");
+                                String dateStr = joData.getString("startTime");
+                                SimpleDateFormat curFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date dateObj = curFormat.parse(dateStr);
+                                SimpleDateFormat newFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                classDateTime = newFormat.format(dateObj);
+                                classID = joData.getInt("classID");
+                                className = joData.getString("name");
+                                classTrainerID = joData.getInt("tId");
+                                classTrainerName = joData.getString("displayName");
 
-                            // create header row
-                            //***************************************TO DO
+                                // create header row
+                                // TO DO
 
+                                // set layout for booked class rows
+                                LinearLayout LLC = new LinearLayout(this);
+                                LLC.setOrientation(LinearLayout.HORIZONTAL);
+                                LinearLayout.LayoutParams paramsC = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                paramsC.setMargins(10, 10, 10, 10);
+                                LLC.setLayoutParams(paramsC);
+                                final TextView rowTextView = new TextView(this);
+                                rowTextView.setLayoutParams(paramsC);
+                                LinearLayout layoutC;
 
+                                // CREATE DYNAMIC CLASS ROWS WITH CANCEL BUTTON
+                                // PLACE class and CANCEL button on same line
+                                // clicking Cancel button opens a confirmation dialog and then removes the user from the class enrolment table
+                                rowTextView.setText(classDateTime + " : " + className);
+                                rowTextView.setTag(classBookingID);
 
+                                Button btnCancelClass = new Button(this);
+                                btnCancelClass.setText("Cancel");
+                                // set tags so that relevant data is passed to the database to remove the user from the class
+                                btnCancelClass.setTag(classBookingID);
 
-                            // set layout for booked class rows
-                            LinearLayout LLC = new LinearLayout(this);
-                            LLC.setOrientation(LinearLayout.HORIZONTAL);
-                            LinearLayout.LayoutParams paramsC = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            paramsC.setMargins(10, 10, 10, 10);
-                            LLC.setLayoutParams(paramsC);
-                            final TextView rowTextViewE = new TextView(this);
-                            rowTextViewE.setLayoutParams(paramsC);
-                            LinearLayout layoutC;
+                                btnCancelClass.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // OPEN DIALOG BOX TO CONFIRM THE USER WISHES TO CANCEL THE CLASS AND THEN UPDATE DATABASE IF SO
 
-                            // CREATE DYNAMIC CLASS ROWS WITH CANCEL BUTTON
-                            // ******* PLACE class and CANCEL button on same line
-                            // clicking Cancel button opens a confirmation dialog and then removes the user from the class enrolment table
-                            rowTextViewE.setText(classDateTime + " : " + className + " : " + classDuration + " : " + classTrainerName);
-                            rowTextViewE.setTag(classTimeslotID);
+                                        // Ask user to confirm they wish to update the event
+                                        new AlertDialog.Builder(context)
+                                                .setTitle("Cancel Class Booking?")
+                                                .setMessage("Are you sure you wish to cancel this class booking ?")
+                                                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
 
-                            Button btnCancelClass = new Button(this);
-                            btnCancelClass.setText("Cancel");
-                            // set tags so that relevant data is passed to the database to remove the user from the class
-                            btnCancelClass.setTag(classTimeslotID);
+                                                        // Remove user from the class enrolment table
+                                                        String data = "classes.php?arg1=dcb&arg2=" + btnCancelClass.getTag();
 
-                            btnCancelClass.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    // OPEN DIALOG BOX TO CONFIRM THE USER WISHES TO CANCEL THE CLASS AND THEN UPDATE DATABASE IF SO
+                                                        //Create new database connection
+                                                        ServerConnection serverConnection = new ServerConnection();
+                                                        //Setup response value
+                                                        serverConnection.delegate = asyncResponse;
+                                                        //Send data to server
+                                                        serverConnection.execute(data, "DELETEBOOKING");
 
-                                    // Ask user to confirm they wish to update the event
-                                    new AlertDialog.Builder(context)
-                                            .setTitle("Cancel Class Booking?")
-                                            .setMessage("Are you sure you wish to cancel this class booking ?")
-                                            .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
+                                                    }
+                                                })
 
-                                                    // Remove user from the class enrolment table
-                                                    String data = "programs.php?arg1=dce&arg2=" + userID + "&arg3=" + classTimeslotID;
+                                                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
 
-                                                    //Create new database connection
-                                                    ServerConnection serverConnection = new ServerConnection();
-                                                    //Setup response value
-                                                    serverConnection.delegate = asyncResponse;
-                                                    //Send data to server
-                                                    serverConnection.execute(data, "DELETEBOOKING");
+                                                        // Do nothing
+                                                        dialog.dismiss();
+                                                    }
+                                                })
 
-                                                }
-                                            })
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                .show();
+                                    }
+                                });
 
-                                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
+                                // add day and Add event button on the same row
+                                LLC.addView(rowTextView);
+                                LLC.addView(btnCancelClass);
+                                // add the textview to the linearlayout
+                                layoutC = (LinearLayout) findViewById(R.id.classBookingsLayout);
+                                layoutC.addView(LLC);
+                            }
 
-                                                    // Do nothing
-                                                    dialog.dismiss();
-                                                }
-                                            })
-
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            .show();
-                                }
-                            });
-
-                            // add day and Add event button on the same row
-                            LLC.addView(rowTextViewE);
-                            LLC.addView(btnCancelClass);
-                            // add the textview to the linearlayout
-                            layoutC = (LinearLayout) findViewById(R.id.classBookingsLayout);
-                            layoutC.addView(LLC);
                         }
                     }
                 }
@@ -186,12 +231,17 @@ public class ClassBookings extends AppCompatActivity implements AsyncResponse {
                     .setPositiveButton("OK", null)
                     .show();
         }
+//    }
     }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         //close activity and return to the Classes activity
         finish();
+        Intent i = new Intent(context,Classes.class);
+        i.putExtra("userID",userID);
+        i.putExtra("accountType",accountType);
+        startActivity (i);
     }
 
 }

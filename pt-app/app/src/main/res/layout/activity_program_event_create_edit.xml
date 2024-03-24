@@ -75,13 +75,13 @@ android:orientation="vertical">
                 android:id="@+id/progEventCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="0dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="30dp"
                 android:background="?attr/colorPrimary"
                 android:text="Cancel"
                 android:textColor="#FFF"
-                android:textSize="20dp" />
+                android:textSize="19dp" />
 
             <Button
                 android:id="@+id/progEventDelete"
@@ -92,7 +92,7 @@ android:orientation="vertical">
                 android:background="?attr/colorPrimary"
                 android:text="Delete"
                 android:textColor="#FFF"
-                android:textSize="20dp" />
+                android:textSize="19dp" />
 
             <Button
                 android:id="@+id/progEventSave"
@@ -102,7 +102,7 @@ android:orientation="vertical">
                 android:background="?attr/colorPrimary"
                 android:text="Save"
                 android:textColor="#FFF"
-                android:textSize="20dp" />
+                android:textSize="19dp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

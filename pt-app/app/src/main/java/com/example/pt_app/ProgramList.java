@@ -3,6 +3,7 @@ package com.example.pt_app;
 import static android.widget.AdapterView.*;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -42,9 +43,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
     ProgramListTrainerAdapter spTrainersAdapter ;
     TextView tvNameSearch, tvMinDays, tvMaxDays;
     int userID;
-    String username;
-    boolean bolIsTrainer;
-
+    String username,accountType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,30 +51,27 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         setContentView(R.layout.activity_program_list);
         asyncResponse = this;
         context = this;
-        //context = this;
         tvNameSearch = findViewById(R.id.progListNameSearch);
         tvMinDays = findViewById(R.id.progListMinDays);
         tvMaxDays = findViewById(R.id.progListMaxDays);
+        btnUpdateSearch = findViewById(R.id.progListSearchBtn);
+        btnCreateProgram = findViewById(R.id.progListCreateBtn);
 
-        // TO DO - GET SHARED PREFERENCE - USERID AND WHETHER A TRAINER
-        // **************************************
-        // **************************************
-        // **************************************
-        // **************************************
-        // FOR NOW SET USERID = 99999, TRAINER = YES
-        userID = 99999;
-        bolIsTrainer = true;
+        // Get userid and account type and set screen accordingly
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",0);
+        accountType = intent.getStringExtra("accountType");
 
-        // AND UNCOMMENT FOLLOWING LINES
-
-        if (!bolIsTrainer) {
+        if (accountType.equals("CLIENT")) {
             btnCreateProgram.setEnabled(false);
             btnCreateProgram.setFocusable(false);
             btnCreateProgram.setActivated(false);
             btnCreateProgram.setInputType(InputType.TYPE_NULL);
         }
 
-        btnUpdateSearch = findViewById(R.id.progListSearchBtn);
+        // TEST userID = 99999;
+        // TEST accountType = "TRAINER";
+
         btnUpdateSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,13 +82,14 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             }
         });
 
-        btnCreateProgram = findViewById(R.id.progListCreateBtn);
         btnCreateProgram.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Open the Program Create activity
                 Intent i = new Intent(context, ProgramCreateEdit.class);
                 i.putExtra("MODE","CREATE");
+                i.putExtra("userID",userID);
+                i.putExtra("accountType",accountType);
                 startActivity(i);
                 finish();
             }
@@ -107,17 +104,6 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                // TODO Auto-generated method stub
-                //int pos = spTrainers.getSelectedItemPosition();
-
-                //String trainerID = ((TextView)view.findViewById(R.id.rProgListTrainerID)).getText().toString();
-                //String trainerName = ((TextView)view.findViewById(R.id.rProgListTrainerName)).getText().toString();
-
-                //Toast.makeText(getApplicationContext(),
-                //        "TrainerID : " + trainerID +"\n"
-                //                +"Name : " + trainerName +"\n", Toast.LENGTH_SHORT).show();
-
-                // TO DO get ArrayList data using pos
             }
 
             @Override
@@ -152,15 +138,11 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
                String notes = ((TextView)view.findViewById(R.id.rProgListLVNotes)).getText().toString();
                int trainerID = Integer.parseInt(((TextView)view.findViewById(R.id.rProgListLVTrainerID)).getText().toString());
 
-
-               Toast.makeText(getApplicationContext(),
-                        "ProgramID : " + programID +"\n"
-                                +"Name : " + name +"\n"
-                                +"Duration : " + duration +"\n", Toast.LENGTH_SHORT).show();
-
                 // OPEN EDIT Program Screen for the selected program
                Intent i = new Intent(context, ProgramCreateEdit.class);
                i.putExtra("MODE","EDIT");
+               i.putExtra("userID",userID);
+               i.putExtra("accountType",accountType);
                i.putExtra("PROGID",programID);
                i.putExtra("PROGNAME",name);
                i.putExtra("DURATION",duration);
@@ -178,44 +160,68 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
     //Get the result of async process
     public void processFinish(String result,String destination){
 
-        // CONVERT RESULT STRING TO JSON ARRAY
-        JSONArray ja = null;
-        JSONObject jo = null;
-        try {
-            //ja = new JSONArray(result);
-            jo = new JSONObject(result);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        // First check there wasn't a problem getting session data
+/*        if (result.contains("Session unavailable")) {
+            // display error message and on clicking ok finish all activities and load the login activity
 
-        if (jo.length() > 0) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Error Retrieving Session Data")
+                    .setMessage(result)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close all activities and relaunch the login activity
+                            Intent intent = new Intent(context, ClientLogin.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+
+                    .show();
+        } else {
+*/
+            // CONVERT RESULT STRING TO JSON ARRAY
+            JSONObject jo = null;
             try {
-                if (jo.getString("status").equals("Error")) {
-                    Log.d("Error", jo.getString("msg"));
-
-                    new AlertDialog.Builder(this)
-                            .setTitle("Error Retrieving Programs")
-                            .setMessage(jo.getString("msg"))
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton("OK", null)
-                            .show();
-                } else {
-                    JSONArray jaData = null;
-
-                    if (jo.getString("status").equals("OK")) {
-                        jaData = jo.getJSONArray("data");
-                    }
-
-                    if (destination.equals("spinTrainer")) {
-                        PopulateTrainerSpinner(jaData);
-                    } else if (destination.equals("listPrograms")) {
-                        PopulateProgramListView(jaData);
-                    }
-                }
+                // Get the data which is on line 3 after the session data message
+                String lines[] = result.split("\\r?\\n");
+                //jo = new JSONObject(result);
+                jo = new JSONObject(lines[2]);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-        }
+
+            if (jo.length() > 0) {
+                try {
+                    if (jo.getString("status").equals("Error")) {
+                        Log.d("Error", jo.getString("msg"));
+
+                        new AlertDialog.Builder(this)
+                                .setTitle("Error Retrieving Programs")
+                                .setMessage(jo.getString("msg"))
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setPositiveButton("OK", null)
+                                .show();
+                    } else {
+                        JSONArray jaData = null;
+
+                        if (jo.getString("status").equals("OK")) {
+                            jaData = jo.getJSONArray("data");
+                        }
+
+                        if (destination.equals("spinTrainer")) {
+                            PopulateTrainerSpinner(jaData);
+                        } else if (destination.equals("listPrograms")) {
+                            PopulateProgramListView(jaData);
+                        }
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+//        }
     }
 
     private void PopulateTrainerSpinner (JSONArray ja) {
@@ -229,11 +235,7 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             for (int i = 0; i < ja.length(); i++) {
                 try {
                     JSONObject jo = ja.getJSONObject(i);
-                    int testtid = Integer.parseInt(jo.getString("tId"));
-                    String testName = jo.getString("displayName");
                     ProgramListTrainerModel trainer = new ProgramListTrainerModel(Integer.parseInt(jo.getString("tId")), jo.getString("displayName"));
-                    //trainer.setTrainerID(jo.getInt("trainerID"));
-                    //trainer.setName(jo.getString("name"));
                     arrTrainers.add(trainer);
                 } catch (JSONException ex) {
                     throw new RuntimeException(ex);
@@ -292,18 +294,4 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
         super.onBackPressed();
         finish();
     }
-/*    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (prefs.getBoolean("program_changed", false)) {
-            prefs.edit().remove("program_changed").apply();
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
-        }
-    }
- */
 }
