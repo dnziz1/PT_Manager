@@ -1,42 +1,42 @@
 <?php
-//Content type
-header('Content-Type: text/plain');
+header('Content-Type: application/json');
 
-// Connect to database
-$servername = "localhost";
-$username = "Daniel";
-$password = "notifs12";
-$dbname = "schedules";
+// Include database connection
+include "db.php";
 
-// Create conncection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-echo "Connected successfully\r\n\n";
-
-// Query to retrieve data
-$sql = "SELECT title, details FROM schedules WHERE is_new = 1";
-$result = $conn->query($sql);
-
-// Fetch data and convert it to JSON
-$data = array();
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+// Function to get all notifications
+function getAllNotifications($conn) {
+    try {
+        // Prepare SQL statement to select all notifications
+        $stmt = $conn->prepare("SELECT * FROM schedules");
+        // Execute SQL statement
+        $stmt->execute();
+    } catch(PDOException $e) {
+        // If an exception occurs, return error response
+        $response = ["status" => "Error", "msg" => "PDO exception retrieving notifications: " . $e->getMessage()];
+        echo json_encode($response);
+        return;
     }
-} else {
-    echo"No new notifications.";
+    
+    // Fetch all notifications from the result set
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Check if notifications were found
+    if ($result) {
+        // If notifications found, encode them as JSON and send response
+        $response = ["status" => "OK", "msg" => "Notifications retrieved successfully", "data" => $result];
+        echo json_encode($response);
+    } else {
+        // If no notifications found, send response indicating no data
+        $response = ["status" => "OKND", "msg" => "No notifications found", "data" => null];
+        echo json_encode($response);
+    }
 }
 
-//Reset is_new to 0 for the retrieved data
-$updatedSql = "UPDATE schedules SET is_new = 0 WHERE is_new = 1";
-$conn->query($updatedSql);
 
-// Close the connection
-$conn->close();
+// Call the function to get all notifications
+getAllNotifications($conn);
 
-echo json_encode($data);
+// Close the database connection
+$conn = null;
 ?>
