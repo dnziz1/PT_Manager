@@ -139,6 +139,25 @@ public class Classes extends AppCompatActivity implements AsyncResponse {
             }
         });
 
+        ImageView home = findViewById(R.id.home);
+        ImageView notification = findViewById(R.id.notification);
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Classes.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Classes.this, NotificationActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // Get all trainers from the database to build the trainer spinner
         String data = "classes.php?arg1=gat";
 

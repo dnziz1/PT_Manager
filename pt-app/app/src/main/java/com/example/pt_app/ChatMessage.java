@@ -1,19 +1,26 @@
 package com.example.pt_app;
 
 public class ChatMessage {
-    private String message;
-    private boolean isSentByUser; // Indicator to differentiate between received and sent messages
+    private String sender;
+    private String messageText;
+    private String timestamp;
 
-    public ChatMessage(String message, boolean isSentByUser) {
-        this.message = message;
-        this.isSentByUser = isSentByUser;
+    public ChatMessage(String sender, String messageText, String timestamp) {
+        this.sender = sender;
+        this.messageText = messageText;
+        this.timestamp = timestamp;
     }
 
-    public String getMessage() {
-        return message;
+    public String getSender() {
+        return sender;
     }
 
-    public boolean isSentByUser() {
-        return isSentByUser;
+    public String getMessageText() {
+        return messageText;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 }
+

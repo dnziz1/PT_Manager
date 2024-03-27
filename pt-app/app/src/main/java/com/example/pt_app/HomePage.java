@@ -17,7 +17,6 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
-        ImageView home = findViewById(R.id.home);
 
         ImageView classes = findViewById(R.id.classes);
         ImageView groupchat = findViewById(R.id.groupchat);
@@ -29,6 +28,9 @@ public class HomePage extends AppCompatActivity {
         userID = intent.getIntExtra("userID",0);
         accountType = intent.getStringExtra("accountType");
 
+        ImageView home = findViewById(R.id.home);
+        ImageView notification = findViewById(R.id.notification);
+
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,17 +39,25 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, NotificationActivity.class);
+                startActivity(intent);
+            }
+        });
+
         groupchat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(HomePage.this, ChatActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(HomePage.this, ChatActivity.class);
+                startActivity(intent);
             }
         });
         calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePage.this, Calendar.class);
+                Intent intent = new Intent(HomePage.this, CalendarActivity.class);
                 startActivity(intent);
             }
         });
@@ -79,8 +89,8 @@ public class HomePage extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(HomePage.this, Profile.class);
-                //startActivity(intent);
+                Intent intent = new Intent(HomePage.this, Profile.class);
+                startActivity(intent);
             }
         });
 

@@ -36,19 +36,20 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/app_name"
-        android:layout_width="304dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="52dp"
-        android:layout_marginTop="98dp"
-        android:text="Client"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="48sp"
-        android:textStyle="bold" />
 
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="304dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="52dp"
+            android:layout_marginTop="98dp"
+            android:text="Trainer"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="48sp"
+            android:textStyle="bold" />
 
         <GridLayout
             android:layout_width="match_parent"
@@ -297,20 +298,20 @@
 
         </GridLayout>
 
-<!--        <Toolbar-->
-<!--            android:layout_width="410dp"-->
-<!--            android:layout_height="80dp"-->
-<!--            android:background="?attr/colorPrimary">-->
+        <!--        <Toolbar-->
+        <!--            android:layout_width="410dp"-->
+        <!--            android:layout_height="80dp"-->
+        <!--            android:background="?attr/colorPrimary">-->
 
-<!--            <ImageView-->
-<!--                android:id="@+id/home"-->
-<!--                android:layout_width="50dp"-->
-<!--                android:layout_height="80dp"-->
-<!--                android:layout_gravity="left"-->
-<!--                android:layout_marginLeft="2dp"-->
-<!--                android:clickable="true"-->
-<!--                android:src="@drawable/ic_toolbar" />-->
-<!--        </Toolbar>-->
+        <!--            <ImageView-->
+        <!--                android:id="@+id/home"-->
+        <!--                android:layout_width="50dp"-->
+        <!--                android:layout_height="80dp"-->
+        <!--                android:layout_gravity="left"-->
+        <!--                android:layout_marginLeft="2dp"-->
+        <!--                android:clickable="true"-->
+        <!--                android:src="@drawable/ic_toolbar" />-->
+        <!--        </Toolbar>-->
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

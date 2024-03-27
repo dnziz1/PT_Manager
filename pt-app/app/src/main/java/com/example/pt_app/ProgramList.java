@@ -69,6 +69,25 @@ public class ProgramList extends AppCompatActivity implements AsyncResponse {
             btnCreateProgram.setInputType(InputType.TYPE_NULL);
         }
 
+        ImageView home = findViewById(R.id.home);
+        ImageView notification = findViewById(R.id.notification);
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProgramList.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProgramList.this, NotificationActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // TEST userID = 99999;
         // TEST accountType = "TRAINER";
 
