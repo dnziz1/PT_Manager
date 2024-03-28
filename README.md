@@ -51,11 +51,36 @@ When you're ready to make this README your own, just edit this file and use the 
 ## Suggestions for a good README
 Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-## Name
-Choose a self-explaining name for your project.
+PT Manager App
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Welcome to the Personal Trainer Manager App! This project aims to provide a comprehensive solution for both personal trainers and clients in the fitness industry. The app allows users to manage programs, classes, and communication efficiently. This README file will guide you through the project structure, installation steps, and usage instructions.
+
+- New User Registration: Users can sign up for an account to access the app's features.
+- Calendar Search: Users can view classes based on selected dates.
+- Programs: Trainers can create exercise/workout programs, and clients can search and view program details.
+- Classes: Trainers can create scheduled fitness classes, and clients can search and book timeslots.
+- Notification System: Users receive updates and changes to their class schedules.
+
+## Installation
+To run the Personal Trainer Manager App locally, follow these steps:
+
+1. Clone this repository to your local machine.
+2. Set up a PHP server and MySQL database.
+3. Import the provided SQL file into your MySQL database.
+4. Update the database connection details in the PHP files.
+5. Navigate to the project directory and launch the app using Android Studio.
+
+## Usage
+1. Launch the app on your Android device or emulator.
+2. Register for a new account or log in with existing credentials.
+3. Explore the available features such as browsing programs, booking classes, and receiving notifications.
+4. Enjoy managing your fitness journey with ease!
+
+## Technologies Used
+- Android Studio: Front-end development
+- PHP: Server-side scripting
+- MySQL: Database management
 
 ## Badges
 On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
